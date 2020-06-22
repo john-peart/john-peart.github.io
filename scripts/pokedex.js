@@ -19,11 +19,14 @@ function openDatabase() {
   // If the browser doesn't support service worker,
   // we don't care about having a database
   if (!navigator.serviceWorker) {
+    console.log("Service worker not supported. Will not attempt to open the database");
     return Promise.resolve();
   }
 
   var dbPromise = openDB('pokedex', 1, {
     upgrade(db, oldVersion, newVersion, transaction) {
+
+      console.log(db);
 
       var pokemonStore = db.createObjectStore(pokemonStoreName, { keyPath: 'id' });
       console.log("Created Pokemon store");
@@ -165,16 +168,40 @@ function hideLoading() {
   document.getElementById("pokemonContainer").classList.remove("d-none");
 }
 
+function checkBrowserCompatability()
+{
+  const el = document.getElementById("status");
+  
+  if(window.indexedDB)
+  {
+    el.append("<li>IndexedDB Supported</li>");
+  }
+  else
+  {
+    el.append("<li>IndexedDB NOT Supported</li>");
+  }
+
+  if(window.serviceWorker)
+  {
+    el.append("<li>Service Workers Supported</li>");
+  }
+  else
+  {
+    el.append("<li>Service Workers NOT Supported</li>");
+  }
+  
+}
+
 function init(containerName) {
   var dbPromise = openDatabase();
-
+  
   dbPromise.then(function (db) {
     if (!db) {
+      console.log(db);
       console.log("DB not defined");
     }
     else {
-      db.resolve;
-      console.log(db);
+      db.resolve;      
     }
 
     var pokemonData;
