@@ -1,0 +1,123 @@
+body{
+    background-color:#181b1d;
+    line-height: 1;
+}
+
+div.card
+{
+    min-width: 275px;
+    max-width: 275px;
+    height:350px;
+    padding: 10px;
+}
+
+img.pokemon{
+    height:128px;
+    width:128px;
+}
+
+div.pokemon-types
+{
+    margin-top: -35px;
+}
+.capitalize{
+    text-transform: capitalize;
+}
+
+/***************************************************************************************** 
+* TYPE COLOURS - https://bulbapedia.bulbagarden.net/wiki/Category:Type_color_templates
+*****************************************************************************************/
+
+.badge-grass,
+.badge-fire,
+.badge-electric,
+.badge-fighting,
+.badge-psychic,
+.badge-dark,
+.badge-steel,
+.badge-water,
+.badge-bug,
+.badge-normal,
+.badge-poison,
+.badge-ground,
+.badge-dragon,
+.badge-fairy,
+.badge-flying,
+.badge-ghost,
+.badge-ice,
+.badge-rock{
+    background-color: #222222;
+    color: #ffffff;
+}
+
+.bg-bug-light{background:#C6D16E}
+.bg-bug{background-color:#A8B820}
+.bg-bug-dark{background-color:#6D7815}
+
+.bg-dark-light{background-color:#A29288}
+.bg-dark{background-color:#705848}
+.bg-dark-dark{background-color:#49392F}
+
+.bg-dragon-light{background-color:#A27DFA}
+.bg-dragon{background-color:#7038F8}
+.bg-dragon-dark{background-color:#4924A1}
+
+.bg-electric-light{background-color:#FAE078}
+.bg-electric{background-color:#F8D030}
+.bg-electric-dark{background-color:#A1871F}
+
+.bg-fairy-light{background-color:#F4BDC9}
+.bg-fairy{background-color:#EE99AC}
+.bg-fairy-dark{background-color:#9B6470}
+
+.bg-fighting-light{background-color:#D67873}
+.bg-fighting{background-color:#C03028}
+.bg-fighting-dark{background-color:#7D1F1A}
+
+.bg-fire-light{background-color:#F5AC78}
+.bg-fire{background-color:#F08030}
+.bg-fire-dark{background-color:#9C531F}
+
+.bg-flying-light{background-color:#C6B7F5}
+.bg-flying{background-color:#A890F0}
+.bg-flying-dark{background-color:#6D5E9C}
+
+.bg-ghost-light{background-color:#A292BC}
+.bg-ghost{background-color:#705898}
+.bg-ghost-dark{background-color:#493963}
+
+.bg-grass-light{background-color:#A7DB8D}
+.bg-grass{background-color:#78C850}
+.bg-grass-dark{background-color:#4E8234}
+
+.bg-ground-light{background-color:#EBD69D}
+.bg-ground{background-color:#E0C068}
+.bg-ground-dark{background-color:#927D44}
+
+.bg-ice-light{background-color:#BCE6E6}
+.bg-ice{background-color:#98D8D8}
+.bg-ice-dark{background-color:#638D8D}
+
+.bg-normal-light{background-color:#C6C6A7}
+.bg-normal{background-color:#A8A878}
+.bg-normal-dark{background-color:#6D6D4E}
+
+.bg-poison-light{background-color:#C183C1}
+.bg-poison{background-color:#A040A0}
+.bg-poison-dark{background-color:#682A68}
+
+.bg-psychic-light{background-color:#FA92B2}
+.bg-psychic{background-color:#F85888}
+.bg-psychic-dark{background-color:#A13959}
+
+.bg-rock-light{background-color:#D1C17D}
+.bg-rock{background-color:#B8A038}
+.bg-rock-dark{background-color:#786824}
+
+.bg-steel-light{background-color:#D1D1E0}
+.bg-steel{background-color:#B8B8D0}
+.bg-steel-dark{background-color:#787887}
+
+.bg-water-light{background-color:#9DB7F5}
+.bg-water{background-color:#6890F0}
+.bg-water-dark{background-color:#445E9C}

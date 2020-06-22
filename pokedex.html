@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <link rel="stylesheet" href="/styles/app.css" />
+
+
+  <link rel="manifest" href="manifest.json">
+
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="application-name" content="Emily's Pokedex">
+  <meta name="apple-mobile-web-app-title" content="Emily's Pokedex">
+  <meta name="theme-color" content="#FFFFFF">
+  <meta name="msapplication-navbutton-color" content="#FFFFFF">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="msapplication-starturl" content="/pokedex.html">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <link rel="icon" sizes="128x128" href="/images/icon-128x128.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="/images/icon-128x128.png">
+  <link rel="icon" sizes="192x192" href="/images/icon-192x192.png">
+  <link rel="apple-touch-icon" sizes="192x192" href="/images/icon-192x192.png">
+  <link rel="icon" sizes="256x256" href="/images/icon-256x256.png">
+  <link rel="apple-touch-icon" sizes="256x256" href="/images/icon-256x256.png">
+  <link rel="icon" sizes="384x384" href="/images/icon-384x384.png">
+  <link rel="apple-touch-icon" sizes="384x384" href="/images/icon-384x384.png">
+  <link rel="icon" sizes="512x512" href="/images/icon-512x512.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512x512.png">
+
+</head>
+
+<body>
+  <div id="pokemonContainer" class="container mx-auto d-none">
+    <input class="form-control my-1" placeholder="Search" type="text"></input>
+    <div id="pokemonCardDeck" class="card-deck">
+    </div>
+  </div>
+  <div id="loading" class="container text-center mt-5" style="position:relative">
+    <img src="/images/pokemon_logo_1024.png" style="max-width:400px;z-index: 100; position: relative;" alt="">
+    <div id="loadingGif">
+      <img src="/images/simple_pokeball.gif"  style="margin-top: -50px;z-index: 1;max-width: 400px;" alt="">
+    </div>
+    <h4 class="text-white" style="margin-top:-50px;">&nbsp;&nbsp;&nbsp;Loading...</h4>
+    
+  </div>
+
+  
+  <script>
+    // Check that service workers are supported
+    if ('serviceWorker' in navigator) {
+      // Use the window load event to keep the page load performant
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/service-worker.js');
+      });
+    }
+  </script>
+ 
+
+  <script type="module" src="/scripts/pokedex.js"></script>
+</body>
+
+</html>
