@@ -6,7 +6,7 @@ workbox.setConfig({
 
 //precache local resources and CDN resources
 workbox.precaching.precacheAndRoute([
-  {url: 'index.html', revision: null},
+  {url: 'pokedex.html', revision: null},
   {url: 'manifest.json', revision: null},
   {url: '/scripts/pokedex.js', revision: null},
   {url: '/scripts/idb.js', revision: null},
@@ -28,7 +28,7 @@ workbox.precaching.precacheAndRoute([
 // Demonstrates using default cache
 workbox.routing.registerRoute(
     new RegExp('.*\\.(?:js)'),
-    new workbox.StaleWhileRevalidate(),
+    new workbox.strategies.StaleWhileRevalidate(),
 );
 
 // Demonstrates a custom cache name for a route.
