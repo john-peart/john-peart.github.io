@@ -26,7 +26,7 @@ function openDatabase() {
   var dbPromise = openDB('pokedex', 1, {
     upgrade(db, oldVersion, newVersion, transaction) {
 
-      console.log(db);
+      console.log("Initializing DB");
 
       var pokemonStore = db.createObjectStore(pokemonStoreName, { keyPath: 'id' });
       console.log("Created Pokemon store");
@@ -83,7 +83,7 @@ function PokeCardHtml(character, species, generation) {
   var html = ` 
     <div class="card shadow mx-auto my-1 bg-${character.types[0].type.name}" data-id="${character.id}">
       <div class="bg-${character.types[0].type.name}-dark rounded-top">
-        <img class="card-img-top mx-auto d-block pokemon"  src="${img}" alt="Card image cap" />
+        <img class="card-img-top mx-auto d-block pokemon"  src="${img}" alt="Pokemon Image" />
       </div>          
       <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
           <div class="pokemon-types">
@@ -168,31 +168,38 @@ function hideLoading() {
   document.getElementById("pokemonContainer").classList.remove("d-none");
 }
 
-function checkBrowserCompatability()
-{
-  const el = document.getElementById("status");
-  
-  if(window.indexedDB)
-  {
-    el.append("<li>IndexedDB Supported</li>");
-  }
-  else
-  {
-    el.append("<li>IndexedDB NOT Supported</li>");
-  }
+function debounce(callback, wait) {
+  let timeout;
+  return (...args) => {
+      const context = this;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => callback.apply(context, args), wait);
+  };
+}
 
-  if(window.serviceWorker)
-  {
-    el.append("<li>Service Workers Supported</li>");
-  }
-  else
-  {
-    el.append("<li>Service Workers NOT Supported</li>");
-  }
-  
+function initSearch(db, data){
+  const container = document.getElementById("pokemonCardDeck");
+  var el = document.getElementById("searchBox");
+  el.addEventListener('input', debounce(()=> {
+      var res;
+      if(!el || !el.value || el.value.trim() ==="")
+      {
+        res = data;
+      }
+      else
+      {
+        res = data.filter((val) => {return val.name.startsWith(el.value.trim()) || val.types.findIndex(type => type.type.name.startsWith(el.value.trim()))>-1});        
+      }
+      
+      BuildPokemonCards(db,res)
+      .then((html) => {
+        container.innerHTML = html}
+      );
+    },500))
 }
 
 function init(containerName) {
+
   var dbPromise = openDatabase();
   
   dbPromise.then(function (db) {
@@ -220,6 +227,7 @@ function init(containerName) {
         return BuildPokemonCards(db, pokemonData);
       })
       .then((html)=>{
+        initSearch(db,pokemonData);
         document.getElementById(containerName).innerHTML = html;
         hideLoading();
       });

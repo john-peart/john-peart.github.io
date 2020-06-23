@@ -22,7 +22,8 @@ workbox.precaching.precacheAndRoute([
   {url: '/images/favicon-32x32.png', revision: null},
   {url: '/images/image-placeholder.png', revision: null},
   {url: 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css', revision: null},
-  {url: 'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js', revision: null}
+  {url: 'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js', revision: null},
+  {url: 'https://use.fontawesome.com/releases/v5.7.0/css/all.css',revision: null}
 ]);
 
 // Demonstrates using default cache

@@ -2,7 +2,7 @@
   "name": "Emily's Pokedex",
   "short_name": "Emily's Pokedex",
   "lang": "en-CA",
-  "start_url": "/pokedex.html",
+  "start_url": "/index.html",
   "display": "standalone",
   "theme_color": "#FFFFFF",
   "background_color": "#FFFFFF",

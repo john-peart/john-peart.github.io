@@ -8,6 +8,9 @@
   
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
   <link rel="stylesheet" href="/styles/app.css" />
 
 
@@ -38,7 +41,11 @@
 
 <body>
   <div id="pokemonContainer" class="container mx-auto d-none">
-    <input class="form-control my-1" placeholder="Search" type="text"></input>
+    <!-- Search form -->
+  <form class="form-inline">
+    <i class="fas fa-search text-white" aria-hidden="true"></i>
+    <input id="searchBox" class="form-control form-control ml-3 my-1" type="text" placeholder="Search" aria-label="Search" autocomplete="off">
+  </form>
     <div id="pokemonCardDeck" class="card-deck">
     </div>
   </div>
@@ -47,12 +54,44 @@
     <div id="loadingGif">
       <img src="/images/simple_pokeball.gif"  style="margin-top: -50px;z-index: 1;max-width: 350px;" alt="">
     </div>
-    <h4 id="status" class="text-white" style="margin-top:-50px;">&nbsp;&nbsp;&nbsp;Loading...</h4>
-    <ul id="status">
-    </ul>
+    <h4 id="status" class="text-white text-center" style="margin-top:-50px;">Loading...</h4>
     
   </div>
 
+  <template id="pokecard">
+    <div class="flip-div my-1 mx-auto">
+      <div class="flip-main">
+        <div class="front">
+          <div class="card shadow bg-grass" data-id="1">
+            <div class="bg-grass-dark rounded-top">
+              <img class="card-img-top mx-auto d-block pokemon"  src="images/image-placeholder.png" alt="Card image cap" />
+            </div>          
+            <div class="card-body bg-grass-light rounded-bottom">
+                <div class="pokemon-types">
+                  <span class="capitalize badge badge-grass mr-1 px-3 py-1">Grass</span>
+                </div>
+                <h4 class="card-title text-center capitalize mb-1">Character</h4>              
+                <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
+                <p class="card-text mb-1"><small>
+                  Generation I<br/>
+                  Height: 1'11'<br/>
+                  Weight: 10lbs<br>
+                  Region: Kanto
+                  </small>
+                </p>
+            </div>
+          </div>
+        </div>
+        <div class="back ">
+          <div class="card shadow bg-grass" data-id="1">
+            <div class="card-body bg-grass-light rounded-bottom">
+              <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
   
   <script>
     // Check that service workers are supported
