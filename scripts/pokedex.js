@@ -81,25 +81,38 @@ function PokeCardHtml(character, species, generation) {
   }
 
   var html = ` 
-    <div class="card shadow mx-auto my-1 bg-${character.types[0].type.name}" data-id="${character.id}">
-      <div class="bg-${character.types[0].type.name}-dark rounded-top">
-        <img class="card-img-top mx-auto d-block pokemon"  src="${img}" alt="Pokemon Image" />
-      </div>          
-      <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
-          <div class="pokemon-types">
-            ${types}
+  <div class="flip-div  mx-auto">
+    <div class="flip-main my-1 mx-auto">
+      <div class="front mx-auto">
+        <div class="card shadow bg-${character.types[0].type.name}" data-id="${character.id}">
+          <div class="bg-${character.types[0].type.name}-dark rounded-top">
+            <img class="card-img-top mx-auto d-block pokemon"  src="${img}" alt="Pokemon Image" />
+          </div>          
+          <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
+            <div class="pokemon-types">
+              ${types}
+            </div>
+            <h4 class="card-title text-center capitalize mb-1">${character.name}</h4>              
+            <p class="card-text mb-1"><small>${englishText}</small></p>
+            <p class="card-text mb-1"><small>
+              ${species.generation.name}<br/>
+              Height: ${DecimeterToFeetAndInches(character.height)}<br/>
+              Weight: ${HectogramToPounds(character.weight)}lbs<br>
+              Region: ${generation.main_region.name}
+              </small>
+            </p>
           </div>
-          <h4 class="card-title text-center capitalize mb-1">${character.name}</h4>              
-          <p class="card-text mb-1"><small>${englishText}</small></p>
-          <p class="card-text mb-1"><small>
-            ${species.generation.name}<br/>
-            Height: ${DecimeterToFeetAndInches(character.height)}<br/>
-            Weight: ${HectogramToPounds(character.weight)}lbs<br>
-            Region: ${generation.main_region.name}
-            </small>
-          </p>
+        </div>
+      </div>
+      <div class="back mx-auto">
+        <div class="card shadow bg-${character.types[0].type.name}" data-id="1">
+          <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
+            <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
   `;
   return html;
 }
@@ -198,9 +211,20 @@ function initSearch(db, data){
       
       BuildPokemonCards(db,res)
       .then((html) => {
-        container.innerHTML = html}
+        container.innerHTML = html;
+        attachFlipHander();
+      }
       );
     })
+}
+
+function attachFlipHander(){
+  var cards = document.querySelectorAll(".flip-div");
+  for (const div of cards) {
+    div.addEventListener('click', function(event) {
+      this.classList.toggle("flipped");
+    })
+  }
 }
 
 function init(containerName) {
@@ -232,8 +256,9 @@ function init(containerName) {
         return BuildPokemonCards(db, pokemonData);
       })
       .then((html)=>{
-        initSearch(db,pokemonData);
+        initSearch(db,pokemonData);        
         document.getElementById(containerName).innerHTML = html;
+        attachFlipHander();
         hideLoading();
       });
   })
