@@ -180,7 +180,7 @@ function debounce(callback, wait) {
 function initSearch(db, data){
   const container = document.getElementById("pokemonCardDeck");
   var el = document.getElementById("searchBox");
-  el.addEventListener('input', debounce(()=> {
+  el.addEventListener('input', ()=>{
       var res;
       if(!el || !el.value || el.value.trim() ==="")
       {
@@ -189,10 +189,10 @@ function initSearch(db, data){
       else
       {
         res = data.filter((val) => {
-            return val.name.startsWith(el.value.trim())  //|| 
-                   //val.types.findIndex(
-                   //  type => type.type.name.startsWith(el.value.trim())
-                   //)>-1
+            return val.name.startsWith(el.value.trim())  || 
+                   val.types.findIndex(
+                     type => type.type.name.startsWith(el.value.trim())
+                   )>-1
             });        
       }
       
@@ -200,7 +200,7 @@ function initSearch(db, data){
       .then((html) => {
         container.innerHTML = html}
       );
-    },500))
+    })
 }
 
 function init(containerName) {
