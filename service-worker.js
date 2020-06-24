@@ -8,10 +8,6 @@ workbox.setConfig({
 workbox.precaching.precacheAndRoute([
   {url: 'index.html', revision: null},
   {url: 'manifest.json', revision: null},
-  {url: '/scripts/pokedex.js', revision: null},
-  {url: '/scripts/idb.js', revision: null},
-  {url: '/scripts/wrap-idb-value.js', revision: null},
-  {url: '/styles/app.css', revision: null},
   {url: '/images/pokemon_logo_1024.png', revision: null},
   {url: '/images/simple_pokeball.gif', revision: null},
   {url: '/images/icon-128x128.png', revision: null},
@@ -26,10 +22,14 @@ workbox.precaching.precacheAndRoute([
   {url: 'https://use.fontawesome.com/releases/v5.7.0/css/all.css',revision: null}
 ]);
 
-// Demonstrates using default cache
+
+
 workbox.routing.registerRoute(
-    new RegExp('.*\\.(?:js)'),
-    new workbox.strategies.StaleWhileRevalidate(),
+  ({url, request}) => request.destination === 'script' || 
+                      request.destination === 'style',
+    new workbox.strategies.NetworkFirst({
+    cacheName: 'static-resources',
+  })
 );
 
 // Demonstrates a custom cache name for a route.

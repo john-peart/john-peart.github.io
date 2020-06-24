@@ -188,7 +188,9 @@ function initSearch(db, data){
       }
       else
       {
-        res = data.filter((val) => {return val.name.startsWith(el.value.trim()) || val.types.findIndex(type => type.type.name.startsWith(el.value.trim()))>-1});        
+        res = data.filter((val) => {
+            return val.name.startsWith(el.value.trim()) || 
+                   val.types.findIndex(type => type.type.name.startsWith(el.value.trim()))>-1});        
       }
       
       BuildPokemonCards(db,res)
