@@ -193,6 +193,7 @@ function debounce(callback, wait) {
 function initSearch(db, data){
   const container = document.getElementById("pokemonCardDeck");
   var el = document.getElementById("searchBox");
+  var msg = document.getElementById("statusMessage");
   el.addEventListener('input', ()=>{
       var res;
       if(!el || !el.value || el.value.trim() ==="")
@@ -209,6 +210,9 @@ function initSearch(db, data){
             });        
       }
       
+      msg.innerHTML = `found [${res.length}] matching items`;
+      
+
       BuildPokemonCards(db,res)
       .then((html) => {
         container.innerHTML = html;
