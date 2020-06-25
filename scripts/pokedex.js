@@ -67,7 +67,7 @@ function DecimeterToFeetAndInches(height) {
   return `${feet}' ${inches}"`;
 }
 
-function PokeCardHtml(character, species, generation) {
+function PokeCardHtml(character, species, generation,type) {
   var types = character.types.map((type) => `<span class="capitalize badge badge-${type.type.name} mr-1 px-3 py-1">${type.type.name}</span>`).join(``);
   var img = character.sprites['front_default'];
   if (!img) {
@@ -80,25 +80,51 @@ function PokeCardHtml(character, species, generation) {
     englishText = species.flavor_text_entries[0].flavor_text;
   }
 
+  var genera = species.genera.filter(entry => entry.language.name === "en")[0].genus;
+  if(!genera)
+  {
+    genera = species.genera[0].genus;
+  }
+
+  var evolveFrom = "";
+  var stage = "Basic";
+  if(species.evolves_from_species)
+  {
+    evolveFrom = `Evolves From: <span class="capitalize">${species.evolves_from_species.name.replace("-"," ")}</span><br/>`;
+    stage = "Stage 1/2";
+  }
+
+  var abilities = character.abilities.map(el => el.ability.name.replace("-"," ")).join(",");
+  var strongAgainst = "";
+  var WeekTov = "";
+  
   var html = ` 
   <div class="flip-div  mx-auto">
     <div class="flip-main my-1 mx-auto">
       <div class="front mx-auto">
         <div class="card shadow bg-${character.types[0].type.name}" data-id="${character.id}">
+          <div class="pokemon-htwt text-center rounded-top font-italic">
+                  ${genera}    HT: ${DecimeterToFeetAndInches(character.height)}    WT: ${HectogramToPounds(character.weight)}lbs
+          </div>
           <div class="bg-${character.types[0].type.name}-dark rounded-top">
             <img class="card-img-top mx-auto d-block pokemon"  src="${img}" alt="Pokemon Image" />
-          </div>          
+          </div>   
+          <div class="pokemon-stage text-right pr-3 rounded-bottom">
+            ${stage}
+          </div>        
           <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
             <div class="pokemon-types">
               ${types}
             </div>
             <h4 class="card-title text-center capitalize mb-1">${character.name}</h4>              
             <p class="card-text mb-1"><small>${englishText}</small></p>
-            <p class="card-text mb-1"><small>
-              ${species.generation.name}<br/>
-              Height: ${DecimeterToFeetAndInches(character.height)}<br/>
-              Weight: ${HectogramToPounds(character.weight)}lbs<br>
-              Region: ${generation.main_region.name}
+            <p class="card-text mb-1">
+              <small>
+                <span class="capitalize">${species.generation.name.replace("-"," ")}</span><br/>
+                Region: <span class="capitalize">${generation.main_region.name}</span><br/>
+                ${evolveFrom}
+                Strong Against:<br/>
+                Week To:<br/>  
               </small>
             </p>
           </div>
@@ -106,8 +132,26 @@ function PokeCardHtml(character, species, generation) {
       </div>
       <div class="back mx-auto">
         <div class="card shadow bg-${character.types[0].type.name}" data-id="1">
-          <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
-            <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
+          <div class="card-body bg-${character.types[0].type.name}-light rounded">
+            <small>HP</small>
+            <div class="progress my-1">
+              <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "hp" )[0].base_stat}</div>
+            </div>
+            <small>ATTACK</small>
+            <div class="progress my-1">
+              <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "attack" )[0].base_stat}</div>
+            </div>
+            <small>DEFENSE</small>
+            <div class="progress my-1">
+              <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "defense" )[0].base_stat}</div>
+            </div>
+            <div>            
+              Strong against:<br/>
+              Weak To:<br/>
+            </div>
+            <div>            
+              <small>Abilities: ${abilities}</small>
+            </div>  
           </div>
         </div>
       </div>
@@ -169,7 +213,11 @@ async function BuildPokemonCards(db,pokemon){
     dbStore = tx.objectStore(generationStoreName);              
     var generation = await dbStore.get(species.generation.name)
 
-    return PokeCardHtml(character,species,generation)          
+    tx = db.transaction(typeStoreName);
+    dbStore = tx.objectStore(typeStoreName);
+    var type = await dbStore.get(character.types[0].type.name)
+
+    return PokeCardHtml(character,species,generation,type)          
   })
   
   return Promise.all(htmlArr)
@@ -203,9 +251,9 @@ function initSearch(db, data){
       else
       {
         res = data.filter((val) => {
-            return val.name.startsWith(el.value.trim())  || 
+            return val.name.toLowerCase().startsWith(el.value.toLowerCase().trim())  || 
                    val.types.findIndex(
-                     type => type.type.name.startsWith(el.value.trim())
+                     type => type.type.name.toLowerCase().startsWith(el.value.toLowerCase().trim())
                    )>-1
             });        
       }

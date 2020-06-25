@@ -3,13 +3,27 @@ body{
     line-height: 1;
 }
 
+.card-title {
+    margin-bottom: .25rem;
+}
+
 div.card
 {
     min-width: 275px;
     max-width: 275px;
     height:350px;
 }
-div.card {    padding: 10px;}
+div.card {    
+    padding: 10px;
+}
+
+/* Smartphones (portrait and landscape) ----------- */
+@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
+    /* Styles */
+    div.card{
+      margin-left:50px!important;  
+    }
+}
 
 img.pokemon{
     height:128px;
@@ -24,8 +38,21 @@ div.pokemon-types
     text-transform: capitalize;
 }
 
+.text-uppercase{
+    text-transform: uppercase;
+}
+
 #searchBox{
     width:calc(100% - 16px - 1rem);
+}
+
+
+.pokemon-htwt, .pokemon-stage
+{
+    font-weight: 400;;
+    font-size: 70%;    
+    color:rgb(95, 95, 95);
+    background-color: rgb(184, 184, 184);
 }
 
 /***************************************************************************************** 
