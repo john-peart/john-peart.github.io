@@ -13,7 +13,9 @@ const speciesStoreName = "Species";
 const generationURL = "https://pokeapi.co/api/v2/generation?limit=5000";
 const generationStoreName = "Generations";
 const typeURL = "https://pokeapi.co/api/v2/type?limit=100";
-const typeStoreName = "Types"
+const typeStoreName = "Types";
+const abilityeURL = "https://pokeapi.co/api/v2/ability?limit=2000";
+const abilityStoreName = "Abilities"
 
 function openDatabase() {
   // If the browser doesn't support service worker,
@@ -47,8 +49,12 @@ function openDatabase() {
 
       var generationStore = db.createObjectStore(typeStoreName, { keyPath: 'name' });
       console.log("Created Type store");
-      generationStore.createIndex("name", "name");
-      console.log("Created index on Type object store");
+    
+
+      var abilityStore = db.createObjectStore(abilityStoreName, { keyPath: 'name' });
+      console.log("Created Ability store");
+  
+
     }
   });
   return dbPromise;
@@ -68,7 +74,8 @@ function DecimeterToFeetAndInches(height) {
 }
 
 function PokeCardHtml(character, species, generation,type) {
-  var types = character.types.map((type) => `<span class="capitalize badge badge-${type.type.name} mr-1 px-3 py-1">${type.type.name}</span>`).join(``);
+  var types = character.types.map((type) => `<li class="list-inline-item m-0 badge-circle bg-${type.type.name}"><img class="type-badge" src="images/type-images/${type.type.name}.svg" alt="${type.type.name}"/></li>`).join(``);                      
+
   var img = character.sprites['front_default'];
   if (!img) {
     img = "/images/image-placeholder.png"
@@ -98,6 +105,10 @@ function PokeCardHtml(character, species, generation,type) {
   var strongAgainst = "";
   var WeekTov = "";
   
+var statHP = character.stats.filter(el => el.stat.name === "hp" )[0].base_stat;
+var statDefense = character.stats.filter(el => el.stat.name === "defense" )[0].base_stat;
+var statAttack = character.stats.filter(el => el.stat.name === "attack" )[0].base_stat;
+
   var html = ` 
   <div class="flip-div  mx-auto">
     <div class="flip-main my-1 mx-auto">
@@ -112,19 +123,19 @@ function PokeCardHtml(character, species, generation,type) {
           <div class="pokemon-stage text-right pr-3 rounded-bottom">
             ${stage}
           </div>        
-          <div class="card-body bg-${character.types[0].type.name}-light rounded-bottom">
+          <div class="card-body pt-0 bg-${character.types[0].type.name}-light rounded-bottom">
             <div class="pokemon-types">
-              ${types}
+              <ul class="list-inline types p-0">
+                ${types}
+              </ul>
             </div>
-            <h4 class="card-title text-center capitalize mb-1">${character.name}</h4>              
+            <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>              
             <p class="card-text mb-1"><small>${englishText}</small></p>
             <p class="card-text mb-1">
               <small>
                 <span class="capitalize">${species.generation.name.replace("-"," ")}</span><br/>
                 Region: <span class="capitalize">${generation.main_region.name}</span><br/>
-                ${evolveFrom}
-                Strong Against:<br/>
-                Week To:<br/>  
+                ${evolveFrom}               
               </small>
             </p>
           </div>
@@ -135,22 +146,22 @@ function PokeCardHtml(character, species, generation,type) {
           <div class="card-body bg-${character.types[0].type.name}-light rounded">
             <small>HP</small>
             <div class="progress my-1">
-              <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "hp" )[0].base_stat}</div>
+              <div class="progress-bar bg-info" role="progressbar" style="width: ${Math.floor(statHP/255*100)}%;" aria-valuenow="${statHP}" aria-valuemin="0" aria-valuemax="255">${statHP}</div>
             </div>
             <small>ATTACK</small>
             <div class="progress my-1">
-              <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "attack" )[0].base_stat}</div>
+              <div class="progress-bar bg-success" role="progressbar" style="width: ${Math.floor(statAttack/255*100)}%;" aria-valuenow="${statAttack}" aria-valuemin="0" aria-valuemax="255">${statAttack}</div>
             </div>
             <small>DEFENSE</small>
             <div class="progress my-1">
-              <div class="progress-bar" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">${character.stats.filter(el => el.stat.name === "defense" )[0].base_stat}</div>
+              <div class="progress-bar bg-danger" role="progressbar" style="width: ${Math.floor(statDefense/255*100)}%;" aria-valuenow="${statDefense}" aria-valuemin="0" aria-valuemax="255">${statDefense}</div>
             </div>
             <div>            
               Strong against:<br/>
               Weak To:<br/>
             </div>
             <div>            
-              <small>Abilities: ${abilities}</small>
+              Abilities: ${abilities}
             </div>  
           </div>
         </div>
@@ -242,7 +253,7 @@ function initSearch(db, data){
   const container = document.getElementById("pokemonCardDeck");
   var el = document.getElementById("searchBox");
   var msg = document.getElementById("statusMessage");
-  el.addEventListener('input', ()=>{
+  el.addEventListener('input', debounce(()=>{
       var res;
       if(!el || !el.value || el.value.trim() ==="")
       {
@@ -267,7 +278,7 @@ function initSearch(db, data){
         attachFlipHander();
       }
       );
-    })
+    },750));
 }
 
 function attachFlipHander(){
@@ -293,18 +304,29 @@ function init(containerName) {
     }
 
     var pokemonData;
+    var speciesData;
+    var generationData;
+    var typeData;
+    var abilityData;
     LoadApiData(db,pokemonStoreName,pokemonURL)
       .then((pokemon) => {
         pokemonData = pokemon;
         return LoadApiData(db,speciesStoreName,speciesURL);
       })
-      .then(() => {
+      .then((species) => {
+        speciesData = species;
         return LoadApiData(db,generationStoreName,generationURL);
       })
-      .then(() => {
+      .then((generations) => {
+        generationData = generations;
         return LoadApiData(db,typeStoreName,typeURL);
       })
-      .then(() => {               
+      .then((types) => {
+        typeData = types;
+        return LoadApiData(db,abilityStoreName,typeURL);
+      })
+      .then((abilities) => {               
+        abilityData = abilityData;
         return BuildPokemonCards(db, pokemonData);
       })
       .then((html)=>{

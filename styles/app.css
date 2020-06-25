@@ -25,6 +25,12 @@ div.card {
     }
 }
 
+.list-inline.types > li{
+    display: inline-block;
+    min-height: 16px;
+    max-height: 16px;
+}
+
 img.pokemon{
     height:128px;
     width:128px;
@@ -32,7 +38,8 @@ img.pokemon{
 
 div.pokemon-types
 {
-    margin-top: -35px;
+    position: fixed;
+    margin-top: -24px;
 }
 .capitalize{
     text-transform: capitalize;
@@ -59,26 +66,23 @@ div.pokemon-types
 * TYPE COLOURS - https://bulbapedia.bulbagarden.net/wiki/Category:Type_color_templates
 *****************************************************************************************/
 
-.badge-grass,
-.badge-fire,
-.badge-electric,
-.badge-fighting,
-.badge-psychic,
-.badge-dark,
-.badge-steel,
-.badge-water,
-.badge-bug,
-.badge-normal,
-.badge-poison,
-.badge-ground,
-.badge-dragon,
-.badge-fairy,
-.badge-flying,
-.badge-ghost,
-.badge-ice,
-.badge-rock{
-    background-color: #222222;
-    color: #ffffff;
+img.type-badge{
+    height:26px;
+    min-height: 26px;
+    width: 26px;
+    min-width: 26px;
+    padding-left: 0px;
+    padding-top: 4px;
+}
+
+.list-inline.types > li.badge-circle{    
+    width:32px;
+    max-width:32px;
+    height:32px; 
+    max-height:32px;
+    text-align:center;
+    line-height:0;
+    border-radius:50%;
 }
 
 .bg-bug-light{background:#C6D16E}
