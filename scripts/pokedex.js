@@ -73,9 +73,29 @@ function DecimeterToFeetAndInches(height) {
   return `${feet}' ${inches}"`;
 }
 
-function PokeCardHtml(character, species, generation,type, abilities) {
-  var types = character.types.map((type) => `<li class="list-inline-item m-0 badge-circle bg-${type.type.name}"><img class="type-badge" src="images/type-images/${type.type.name}.svg" alt="${type.type.name}"/></li>`).join(``);                      
+function getStengthsAndWeekness(typeArr)
+{
+  var res = {};
+  res.double_damage_to = [];
+  res.double_damage_from = [];
+  res.half_damage_to = [];
+  res.half_damage_from = [];
 
+  typeArr.forEach((t) => {
+    res.double_damage_to.push(...t.damage_relations.double_damage_to.map(el => el.name));
+    res.half_damage_to.push(...t.damage_relations.half_damage_to.map(el => el.name));
+    res.double_damage_from.push(...t.damage_relations.double_damage_to.map(el => el.name));
+    res.half_damage_from.push(...t.damage_relations.double_damage_to.map(el => el.name));
+  })
+  
+  return res;
+  
+}
+
+function PokeCardHtml(character, species, generation,types, abilities, maxStats) {
+  var typesHtml = character.types.map((type) => `<li class="list-inline-item m-0 badge-circle bg-${type.type.name}"><img class="type-badge" src="images/type-images/${type.type.name}.svg" alt="${type.type.name}"/></li>`).join(``);                      
+
+  var damageRelations = getStengthsAndWeekness(types);
   var img = character.sprites['front_default'];
   if (!img) {
     img = "/images/image-placeholder.png"
@@ -129,7 +149,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
           <div class="card-body pt-0 bg-${character.types[0].type.name}-light rounded-bottom">
             <div class="pokemon-types">
               <ul class="list-inline types p-0">
-                ${types}
+                ${typesHtml}
               </ul>
             </div>
             <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>              
@@ -153,7 +173,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">HP</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar bg-info" role="progressbar" style="width: ${Math.floor(statHP/255*100)}%;" aria-valuenow="${statHP}" aria-valuemin="0" aria-valuemax="255">${statHP}</div>
+                      <div class="progress-bar bg-info" role="progressbar" style="width: ${Math.floor(statHP/maxStats.HP*100)}%;" aria-valuenow="${statHP}" aria-valuemin="0" aria-valuemax="${maxStats.HP}">${statHP}</div>
                     </div>
                   </td>
                 </tr>
@@ -161,7 +181,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">ATT</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar bg-success" role="progressbar" style="width: ${Math.floor(statAttack/255*100)}%;" aria-valuenow="${statAttack}" aria-valuemin="0" aria-valuemax="255">${statAttack}</div>
+                      <div class="progress-bar bg-success" role="progressbar" style="width: ${Math.floor(statAttack/maxStats.Attack*100)}%;" aria-valuenow="${statAttack}" aria-valuemin="0" aria-valuemax="${maxStats.Attack}">${statAttack}</div>
                     </div>
                   </td>
                 </tr>
@@ -169,7 +189,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">DEF</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar bg-danger" role="progressbar" style="width: ${Math.floor(statDefense/255*100)}%;" aria-valuenow="${statDefense}" aria-valuemin="0" aria-valuemax="255">${statDefense}</div>
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: ${Math.floor(statDefense/maxStats.Defense*100)}%;" aria-valuenow="${statDefense}" aria-valuemin="0" aria-valuemax="${maxStats.Defense}">${statDefense}</div>
                     </div>
                   </td>
                 </tr>
@@ -177,7 +197,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">S. ATT</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: ${Math.floor(statSAttack/255*100)}%;" aria-valuenow="${statSAttack}" aria-valuemin="0" aria-valuemax="255">${statSAttack}</div>
+                      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: ${Math.floor(statSAttack/maxStats.SpecialAttack*100)}%;" aria-valuenow="${statSAttack}" aria-valuemin="0" aria-valuemax="${maxStats.SpecialAttack}">${statSAttack}</div>
                     </div>
                   </td>
                 </tr>
@@ -185,7 +205,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">S. DEF</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: ${Math.floor(statSDefense/255*100)}%;" aria-valuenow="${statSDefense}" aria-valuemin="0" aria-valuemax="255">${statSDefense}</div>
+                      <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: ${Math.floor(statSDefense/maxStats.SpecialDefense*100)}%;" aria-valuenow="${statSDefense}" aria-valuemin="0" aria-valuemax="${maxStats.SpecialDefense}">${statSDefense}</div>
                     </div>
                   </td>
                 </tr>
@@ -193,20 +213,20 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
                   <td class="col-stat-label small">SPEED</td>
                   <td class="col-stat-progress">
                     <div class="progress stat-progress my-1">
-                      <div class="progress-bar bg-warning" role="progressbar" style="width: ${Math.floor(statSpeed/255*100)}%;" aria-valuenow="${statSpeed}" aria-valuemin="0" aria-valuemax="255">${statSpeed}</div>
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: ${Math.floor(statSpeed/maxStats.Speed*100)}%;" aria-valuenow="${statSpeed}" aria-valuemin="0" aria-valuemax="${maxStats.Speed}">${statSpeed}</div>
                     </div>
                   </td>
                 </tr>
               </tbody>
             </table>           
             <div class="pt-3">            
-              <p class="small">
-                <span class="font-weight-bold">Strong against:</span> ${type.damage_relations.double_damage_to.map(el => el.name).join(", ")}, ${type.damage_relations.half_damage_to.map(el => el.name).join(", ")}
-              </p>
-              <p class="small">
-                <span class="font-weight-bold">Weak To:</span> ${type.damage_relations.double_damage_from.map(el => el.name).join(", ")},${type.damage_relations.half_damage_from.map(el => el.name).join(", ")}
-              </p>
-            </div>
+            <p class="small">
+              <span class="font-weight-bold">Strong against:</span> ${damageRelations.double_damage_to.join(", ")}, ${damageRelations.half_damage_to.join(", ")}
+            </p>
+            <p class="small">
+              <span class="font-weight-bold">Weak To:</span> ${damageRelations.double_damage_from.join(", ")}, ${damageRelations.half_damage_from.join(", ")}
+            </p>
+          </div>
             <div>            
               <p class="small">
                 <span class="font-weight-bold">Abilities:</span> ${abilities}
@@ -218,6 +238,7 @@ var statSDefense = character.stats.filter(el => el.stat.name === "special-defens
     </div>
   </div>
   `;
+
   return html;
 }
 
@@ -226,58 +247,31 @@ function LoadJSON(url) {
     .then(response => response.json())
 }
 
-function LoadApiData(db,storeName,url, forceReload){
-  console.log("Loading " + storeName);
+function LoadApiData(url){
+  console.log("Loading " + url);
 
   var results;
   return LoadJSON(url)
     .then(async function (apiData) {
-
-      var tx = db.transaction(storeName);
-      var dbStore = tx.objectStore(storeName);
-      let dbData = await dbStore.getAll();
-
-      //see if the number of results in index DB matches the number returned by the API
-      if (forceReload || !dbData || dbData.length < apiData.results.length) {
-        //update from the API because we don't have any OR there are  entries we don't have
-        console.log("Updating IndexDB store " + storeName + " from " + url);
-        const promises = [];
+        var promises = [];
         apiData.results.forEach(item => {
           promises.push(fetch(item.url).then((res) => res.json()));
         });
         return Promise.all(promises).then(function (results) {
-          var tx = db.transaction(storeName, "readwrite");
-          var store = tx.objectStore(storeName);
-          results.forEach(item => {
-            store.put(item);
-          });
-          return results;
+          return results;          
         });
-      }
-      else {
-        console.log("Using cached IndexDB data for store " + storeName);
-        return dbData;
-      }
-
-    })
+      });
 }
 
-async function BuildPokemonCards(db,pokemon){
+async function BuildPokemonCards(data){
 
-  var htmlArr = pokemon.map(async (character) => {
-    let tx = db.transaction(speciesStoreName);
-    var dbStore = tx.objectStore(speciesStoreName);
-    var species = await dbStore.get(character.species.name);
+  var htmlArr = data.pokemon.map(async (character) => {
+        
+    var species = data.species.filter(el => el.name === character.species.name)[0]           
+    var generation = data.generations.filter(el => el.name === species.generation.name)[0]      
+    var type = data.types.filter(el=> el.name === character.types[0].type.name);    
 
-    tx = db.transaction(generationStoreName);
-    dbStore = tx.objectStore(generationStoreName);              
-    var generation = await dbStore.get(species.generation.name)
-
-    tx = db.transaction(typeStoreName);
-    dbStore = tx.objectStore(typeStoreName);
-    var type = await dbStore.get(character.types[0].type.name)
-
-    return PokeCardHtml(character,species,generation,type)          
+    return PokeCardHtml(character,species,generation,type, data.abilities, data.maxStats)          
   })
   
   return Promise.all(htmlArr)
@@ -299,36 +293,77 @@ function debounce(callback, wait) {
   };
 }
 
-function initSearch(db, data){
+function searchPokemon(data, searchTerm){
+  if(!searchTerm || searchTerm.trim() ==="")
+  {
+    return data;
+  }
+  else
+  {
+    var filtered = data.pokemon.filter((val) => {
+      return val.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  || 
+            val.types.findIndex(
+              type => type.type.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())
+            )>-1
+    });        
+    return {
+      pokemon: filtered,
+      types: data.types,
+      species: data.species,
+      generations: data.generations,
+      abilities: data.abilities,
+      maxStats: data.maxStats
+    } 
+  }
+}
+
+function initSearch(data){
   const container = document.getElementById("pokemonCardDeck");
   var el = document.getElementById("searchBox");
+  var d = data;
   var msg = document.getElementById("record_count");
   el.addEventListener('input', debounce(()=>{
-      var res;
-      if(!el || !el.value || el.value.trim() ==="")
-      {
-        res = data;
-      }
-      else
-      {
-        res = data.filter((val) => {
-            return val.name.toLowerCase().startsWith(el.value.toLowerCase().trim())  || 
-                   val.types.findIndex(
-                     type => type.type.name.toLowerCase().startsWith(el.value.toLowerCase().trim())
-                   )>-1
-            });        
-      }
-      
-      msg.innerHTML = `${res.length}/${data.length}`;
-      
+      //clear out the screen and show something if search takes longer than x milliseconds
+      container.innerHTML = "";
 
-      BuildPokemonCards(db,res)
+      var results = searchPokemon(d,el.value);                
+
+      BuildPokemonCards(results)
       .then((html) => {
+
+        msg.innerHTML = `${results.pokemon.length}/${d.pokemon.length}`;
         container.innerHTML = html;
         attachFlipHander();
       }
       );
     },750));
+}
+
+function setMaxStats(data){
+  var maxHP = 0;
+  var maxDefense = 0;
+  var maxAttack = 0;
+  var maxSAttack = 0;
+  var maxSDefense = 0;
+  var maxSpeed = 0;
+
+  data.pokemon.forEach((p) => {
+    maxHP = Math.max(p.stats.filter(el => el.stat.name === "hp" )[0].base_stat,maxHP);
+    maxDefense = Math.max(p.stats.filter(el => el.stat.name === "defense" )[0].base_stat,maxDefense);
+    maxAttack = Math.max(p.stats.filter(el => el.stat.name === "attack" )[0].base_stat, maxAttack);
+    maxSpeed = Math.max(p.stats.filter(el => el.stat.name === "speed" )[0].base_stat, maxSpeed);
+    maxSAttack = Math.max(p.stats.filter(el => el.stat.name === "special-attack" )[0].base_stat, maxSAttack);
+    maxSDefense = Math.max(p.stats.filter(el => el.stat.name === "special-defense" )[0].base_stat, maxSDefense);
+  });
+
+  data.maxStats = {}
+  data.maxStats.HP = maxHP;
+  data.maxStats.Defense = maxDefense;
+  data.maxStats.Attack = maxAttack;
+  data.maxStats.SpecialDefense = maxSDefense;
+  data.maxStats.SpecialAttack = maxSAttack;
+  data.maxStats.Speed = maxSpeed;
+  return data;
 }
 
 function attachFlipHander(){
@@ -340,52 +375,54 @@ function attachFlipHander(){
   }
 }
 
-function init(containerName) {
+function updateLoadingProgress(msg){
+  document.getElementById("loadingStatus").innerText = msg;
+}
 
-  var dbPromise = openDatabase();
-  
-  dbPromise.then(function (db) {
-    if (!db) {
-      console.log(db);
-      console.log("DB not defined");
-    }
-    else {
-      db.resolve;      
-    }
+function init(containerName) {  
 
-    var pokemonData;
-    var speciesData;
-    var generationData;
-    var typeData;
-    var abilityData;
-    LoadApiData(db,pokemonStoreName,pokemonURL)
+    var dataSet = {};
+
+    updateLoadingProgress("Loading Pokemon");
+    LoadApiData(pokemonURL)
       .then((pokemon) => {
-        pokemonData = pokemon;
-        return LoadApiData(db,speciesStoreName,speciesURL);
+        updateLoadingProgress("Loading Species");
+        dataSet.pokemon = pokemon;
+        return LoadApiData(speciesURL);
       })
       .then((species) => {
-        speciesData = species;
-        return LoadApiData(db,generationStoreName,generationURL);
+        updateLoadingProgress("Loading Generations");
+        dataSet.species = species;
+        return LoadApiData(generationURL);
       })
       .then((generations) => {
-        generationData = generations;
-        return LoadApiData(db,typeStoreName,typeURL);
+        updateLoadingProgress("Loading Types");
+        dataSet.generations = generations;
+        return LoadApiData(typeURL);
       })
       .then((types) => {
-        typeData = types;
-        return LoadApiData(db,abilityStoreName,typeURL);
+        updateLoadingProgress("Loading Abilities");
+        dataSet.types = types;
+        return LoadApiData(typeURL);
       })
-      .then((abilities) => {               
-        abilityData = abilityData;
-        return BuildPokemonCards(db, pokemonData);
+      .then((abilities) => {
+        updateLoadingProgress("Building Pokedex");
+        dataSet.abilities = abilities;               
+        setMaxStats(dataSet);
+        return BuildPokemonCards(dataSet);
       })
       .then((html)=>{
-        initSearch(db,pokemonData);        
+        initSearch(dataSet);        
         document.getElementById(containerName).innerHTML = html;
         attachFlipHander();
         hideLoading();
+      })
+      .catch((error) => {
+        //remvoe the GIF
+        document.getElementById("loadingGif").remove();
+        //show the error
+        updateLoadingProgress("An error has occured: " + error);
       });
-  })
 }
 
 init("pokemonCardDeck");

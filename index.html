@@ -24,7 +24,7 @@
   <meta name="msapplication-navbutton-color" content="#FFFFFF">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="msapplication-starturl" content="/pokedex.html">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1, shrink-to-fit=no">
 
   <link rel="icon" sizes="128x128" href="/images/icon-128x128.png">
   <link rel="apple-touch-icon" sizes="128x128" href="/images/icon-128x128.png">
@@ -44,7 +44,7 @@
     <!-- Search form -->
     <div class="form-horizontal">      
       <span class="search-icon"><i class="fas fa-search text-info " aria-hidden="true"></i></span>
-      <input id="searchBox" class="form-control form-control-success form-control-sm mx-1 my-1 pl-4" type="text" placeholder="Search" aria-label="Search" autocomplete="off" >        
+      <input id="searchBox" class="form-control form-control mx-1 my-1 pl-4" type="text" placeholder="Search" aria-label="Search" autocomplete="off" >        
       <span class="text-info search-count"><small id="record_count">-</small></span>
     </div>     
   </div>
@@ -55,9 +55,10 @@
   <div id="loading" class="container text-center mt-5" style="position:relative">
     <img src="/images/pokemon_logo_1024.png" style="max-width:350px;z-index: 100; position: relative;" alt="">
     <div id="loadingGif">
-      <img src="/images/simple_pokeball.gif"  style="margin-top: -50px;z-index: 1;max-width: 350px;" alt="">
+      <img src="/images/simple_pokeball.gif"  style="margin-top: -50px;z-index: 1;max-width: 350px;" alt="">      
     </div>
-    <h4 id="status" class="text-white text-center" style="margin-top:-50px;">Loading...</h4>
+    <h4 id="loadingStatus" class="text-white text-center">Loading...</h4>
+    
     
   </div>
 

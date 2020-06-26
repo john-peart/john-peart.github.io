@@ -72,12 +72,12 @@ div.pokemon-types
     padding-left: 8px;
     z-index: 2;
     margin-bottom: -31px;
-    padding-top: 7px;
+    padding-top: 12px;
 }
 
 .search-count{
     float: right; 
-    margin-top: -28px;
+    margin-top: -32px;
 }
 .pokemon-htwt, .pokemon-stage
 {
