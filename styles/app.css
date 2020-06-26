@@ -17,6 +17,24 @@ div.card {
     padding: 10px;
 }
 
+/*
+.form-control-feedback {
+    position: absolute;    
+    z-index: 2;
+    display: block;   
+    text-align: center;
+    pointer-events: none;
+}
+.form-control-feedback.right{
+    top: .5rem;
+    right: .5rem;
+}
+.form-control-feedback.left{
+    top: .5rem;
+    left: .5rem;
+}
+*/
+
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
     /* Styles */
@@ -49,11 +67,18 @@ div.pokemon-types
     text-transform: uppercase;
 }
 
-#searchBox{
-    width:calc(100% - 16px - 1rem);
+.search-icon{
+    float: left;
+    padding-left: 8px;
+    z-index: 2;
+    margin-bottom: -31px;
+    padding-top: 7px;
 }
 
-
+.search-count{
+    float: right; 
+    margin-top: -28px;
+}
 .pokemon-htwt, .pokemon-stage
 {
     font-weight: 400;;
@@ -217,4 +242,19 @@ img.type-badge{
     -ms-transform-style: preserve-3d;
     transition: 1s;
     transform-style: preserve-3d;
+}
+
+div#header{
+    position: sticky;
+    top: 0px;
+    z-index: 2;
+    height: 38px;
+    background: #181b1d;
+}
+
+td.col-stat-progress{
+    width: 160px;
+} 
+td.stat-label{
+    width: 50px;
 }

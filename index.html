@@ -42,11 +42,10 @@
 <body>
   <div id="header" class="container mx-auto d-none">
     <!-- Search form -->
-    <div class="text-center text-white" id="statusMessage">
-    </div> 
-    <div class="form-inline">
-      <i class="fas fa-search text-white px-1" aria-hidden="true"></i>
-      <input id="searchBox" class="form-control form-control-sm ml-3 my-1" type="text" placeholder="Search" aria-label="Search" autocomplete="off" >
+    <div class="form-horizontal">      
+      <span class="search-icon"><i class="fas fa-search text-info " aria-hidden="true"></i></span>
+      <input id="searchBox" class="form-control form-control-success form-control-sm mx-1 my-1 pl-4" type="text" placeholder="Search" aria-label="Search" autocomplete="off" >        
+      <span class="text-info search-count"><small id="record_count">-</small></span>
     </div>     
   </div>
   <div id="pokemonContainer" class="container mx-auto d-none">    

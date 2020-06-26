@@ -73,7 +73,7 @@ function DecimeterToFeetAndInches(height) {
   return `${feet}' ${inches}"`;
 }
 
-function PokeCardHtml(character, species, generation,type) {
+function PokeCardHtml(character, species, generation,type, abilities) {
   var types = character.types.map((type) => `<li class="list-inline-item m-0 badge-circle bg-${type.type.name}"><img class="type-badge" src="images/type-images/${type.type.name}.svg" alt="${type.type.name}"/></li>`).join(``);                      
 
   var img = character.sprites['front_default'];
@@ -108,6 +108,9 @@ function PokeCardHtml(character, species, generation,type) {
 var statHP = character.stats.filter(el => el.stat.name === "hp" )[0].base_stat;
 var statDefense = character.stats.filter(el => el.stat.name === "defense" )[0].base_stat;
 var statAttack = character.stats.filter(el => el.stat.name === "attack" )[0].base_stat;
+var statSpeed = character.stats.filter(el => el.stat.name === "speed" )[0].base_stat;
+var statSAttack = character.stats.filter(el => el.stat.name === "special-attack" )[0].base_stat;
+var statSDefense = character.stats.filter(el => el.stat.name === "special-defense" )[0].base_stat;
 
   var html = ` 
   <div class="flip-div  mx-auto">
@@ -144,24 +147,70 @@ var statAttack = character.stats.filter(el => el.stat.name === "attack" )[0].bas
       <div class="back mx-auto">
         <div class="card shadow bg-${character.types[0].type.name}" data-id="1">
           <div class="card-body bg-${character.types[0].type.name}-light rounded">
-            <small>HP</small>
-            <div class="progress my-1">
-              <div class="progress-bar bg-info" role="progressbar" style="width: ${Math.floor(statHP/255*100)}%;" aria-valuenow="${statHP}" aria-valuemin="0" aria-valuemax="255">${statHP}</div>
-            </div>
-            <small>ATTACK</small>
-            <div class="progress my-1">
-              <div class="progress-bar bg-success" role="progressbar" style="width: ${Math.floor(statAttack/255*100)}%;" aria-valuenow="${statAttack}" aria-valuemin="0" aria-valuemax="255">${statAttack}</div>
-            </div>
-            <small>DEFENSE</small>
-            <div class="progress my-1">
-              <div class="progress-bar bg-danger" role="progressbar" style="width: ${Math.floor(statDefense/255*100)}%;" aria-valuenow="${statDefense}" aria-valuemin="0" aria-valuemax="255">${statDefense}</div>
+            <table class="stats">
+              <tbody>
+                <tr>
+                  <td class="col-stat-label small">HP</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: ${Math.floor(statHP/255*100)}%;" aria-valuenow="${statHP}" aria-valuemin="0" aria-valuemax="255">${statHP}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-stat-label small">ATT</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar bg-success" role="progressbar" style="width: ${Math.floor(statAttack/255*100)}%;" aria-valuenow="${statAttack}" aria-valuemin="0" aria-valuemax="255">${statAttack}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-stat-label small">DEF</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar bg-danger" role="progressbar" style="width: ${Math.floor(statDefense/255*100)}%;" aria-valuenow="${statDefense}" aria-valuemin="0" aria-valuemax="255">${statDefense}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-stat-label small">S. ATT</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar progress-bar-striped bg-success" role="progressbar" style="width: ${Math.floor(statSAttack/255*100)}%;" aria-valuenow="${statSAttack}" aria-valuemin="0" aria-valuemax="255">${statSAttack}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-stat-label small">S. DEF</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar progress-bar-striped bg-danger" role="progressbar" style="width: ${Math.floor(statSDefense/255*100)}%;" aria-valuenow="${statSDefense}" aria-valuemin="0" aria-valuemax="255">${statSDefense}</div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="col-stat-label small">SPEED</td>
+                  <td class="col-stat-progress">
+                    <div class="progress stat-progress my-1">
+                      <div class="progress-bar bg-warning" role="progressbar" style="width: ${Math.floor(statSpeed/255*100)}%;" aria-valuenow="${statSpeed}" aria-valuemin="0" aria-valuemax="255">${statSpeed}</div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>           
+            <div class="pt-3">            
+              <p class="small">
+                <span class="font-weight-bold">Strong against:</span> ${type.damage_relations.double_damage_to.map(el => el.name).join(", ")}, ${type.damage_relations.half_damage_to.map(el => el.name).join(", ")}
+              </p>
+              <p class="small">
+                <span class="font-weight-bold">Weak To:</span> ${type.damage_relations.double_damage_from.map(el => el.name).join(", ")},${type.damage_relations.half_damage_from.map(el => el.name).join(", ")}
+              </p>
             </div>
             <div>            
-              Strong against:<br/>
-              Weak To:<br/>
-            </div>
-            <div>            
-              Abilities: ${abilities}
+              <p class="small">
+                <span class="font-weight-bold">Abilities:</span> ${abilities}
+              </p>
             </div>  
           </div>
         </div>
@@ -238,6 +287,7 @@ async function BuildPokemonCards(db,pokemon){
 function hideLoading() {
   document.getElementById("loading").classList.add("d-none");
   document.getElementById("pokemonContainer").classList.remove("d-none");
+  document.getElementById("header").classList.remove("d-none");
 }
 
 function debounce(callback, wait) {
@@ -252,7 +302,7 @@ function debounce(callback, wait) {
 function initSearch(db, data){
   const container = document.getElementById("pokemonCardDeck");
   var el = document.getElementById("searchBox");
-  var msg = document.getElementById("statusMessage");
+  var msg = document.getElementById("record_count");
   el.addEventListener('input', debounce(()=>{
       var res;
       if(!el || !el.value || el.value.trim() ==="")
@@ -269,7 +319,7 @@ function initSearch(db, data){
             });        
       }
       
-      msg.innerHTML = `found [${res.length}] matching items`;
+      msg.innerHTML = `${res.length}/${data.length}`;
       
 
       BuildPokemonCards(db,res)
