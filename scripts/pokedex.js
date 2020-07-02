@@ -356,7 +356,8 @@ function transformData(apiDataSet,swordShieldData)
           name: p.name,
           height: DecimeterToFeetAndInches(p.height),
           weight: HectogramToPounds(p.weight),
-          spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
+          //spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
+          spriteURL: buildSpriteURL(p),
           description: species.flavor_text_entries.filter(entry => entry.language.name === "en")[0].flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," "),
           base_stats: {
             HP: p.stats.filter(el => el.stat.name === "hp" )[0].base_stat,
