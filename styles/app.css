@@ -59,6 +59,13 @@ div.pokemon-types
     position: fixed;
     margin-top: -24px;
 }
+
+div.pokemon-types
+{
+    float:right;
+    margin-top: -24px;
+}
+
 .capitalize{
     text-transform: capitalize;
 }
@@ -257,4 +264,10 @@ td.col-stat-progress{
 } 
 td.stat-label{
     width: 50px;
+}
+
+
+/* HYPERLIST VIRTUAL SCROLL CLASS */
+.vrow{
+    left:calc(50% - 125px);
 }

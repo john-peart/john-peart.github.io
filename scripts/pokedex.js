@@ -4,6 +4,7 @@ import { openDB, deleteDB, wrap, unwrap } from './idb.js';
 const pokemonURL = "https://pokeapi.co/api/v2/pokemon?limit=5000";
 const speciesURL = "https://pokeapi.co/api/v2/pokemon-species?limit=1000";
 const generationURL = "https://pokeapi.co/api/v2/generation?limit=5000";
+const evolutionsURL = "https://pokeapi.co/api/v2/evolution-chain?limit=1000";
 const typeURL = "https://pokeapi.co/api/v2/type?limit=100";
 const abilityeURL = "https://pokeapi.co/api/v2/ability?limit=2000";
 const swordShieldURL = "./data/swordshield.json";
@@ -51,14 +52,33 @@ function openDatabase() {
   return dbPromise;
 }
 
-function HectogramToPounds(weigth) {
-  const hectogramsToPounds = 0.220462
-  return Math.round(weigth * hectogramsToPounds);
+function KilogramsToPounds(weight){
+  const hectogramsToPounds = 2.20462;
+  return Math.round(weight * hectogramsToPounds);
+}
+
+function HectogramToPounds(weight) {
+  const hectogramsToPounds = 0.220462;
+  return Math.round(weight * hectogramsToPounds);
 }
 
 function DecimeterToFeetAndInches(height) {
   const decimeterToFeet = 0.3280839895;
   var valueInFeet = height * decimeterToFeet;
+  return FormatFeetAndInches(valueInFeet);
+}
+
+function MetersToFeetAndInches(height)
+{
+  const metersToFeet = 3.28084;
+  var valueInFeet = height * metersToFeet;
+  var feet = Math.floor(valueInFeet);
+  var inches = Math.round((valueInFeet - feet) * 12);
+  return FormatFeetAndInches(valueInFeet);
+}
+
+function FormatFeetAndInches(valueInFeet)
+{
   var feet = Math.floor(valueInFeet);
   var inches = Math.round((valueInFeet - feet) * 12);
   return `${feet}' ${inches}"`;
@@ -83,17 +103,17 @@ function getStengthsAndWeekness(typeArr)
   
 }
 
-function PokeCardHtml(character, maxStats) {
+function GeneratePokeCardHtml(character, maxStats) {
   
   var typesHtml = character.types.map((t) => `<li class="list-inline-item m-0 badge-circle bg-${t}"><img class="type-badge" src="images/type-images/${t}.svg" alt="${t}"/></li>`).join(``);                      
 
   var html = ` 
-  <div class="flip-div  mx-auto">
+  <div class="flip-div  mx-auto" onClick="this.classList.toggle('flipped');">
     <div class="flip-main my-1 mx-auto">
       <div class="front mx-auto">
         <div class="card shadow bg-${character.types[0]}" data-id="${character.id}">
           <div class="pokemon-htwt text-center rounded-top font-italic">
-                  ${character.genus || ""}    HT: ${DecimeterToFeetAndInches(character.height)}    WT: ${HectogramToPounds(character.weight)}lbs
+                  ${character.genus || ""}    HT: ${character.height}    WT: ${character.weight}lbs
           </div>
           <div class="bg-${character.types[0]}-dark rounded-top">
             <img class="card-img-top mx-auto d-block pokemon"  src="${character.spriteURL}" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
@@ -101,7 +121,7 @@ function PokeCardHtml(character, maxStats) {
           <div class="pokemon-stage text-right pr-3 rounded-bottom">
             ${character.stage}
           </div>        
-          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">
+          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">            
             <div class="pokemon-types">
               <ul class="list-inline types p-0">
                 ${typesHtml}
@@ -109,11 +129,13 @@ function PokeCardHtml(character, maxStats) {
             </div>
             <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>              
             <p class="card-text mb-1"><small>${character.description || ""}</small></p>
-            <p class="card-text mb-1">
+            <p class="card-text mb-1 text-center">
+              <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.generation}</span>
+              <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.region}</span>
+            </p>
+            <p class="card-text mb-1 text-center">              
               <small>
-                <span class="text-uppercase">${character.generation}</span><br/>
-                Region: <span class="capitalize">${character.region}</span><br/>
-                ${character.evolves_from}               
+                <span class="capitalize">${(character.evolution_chain || []).filter(el => el).join(" \u21D2 ")}</span>
               </small>
             </p>
           </div>
@@ -184,7 +206,7 @@ function PokeCardHtml(character, maxStats) {
           </div>
             <div>            
               <p class="small">
-                <span class="font-weight-bold">Abilities:</span> 
+                <span class="font-weight-bold">Abilities:</span><span class="capitalize">${character.abilities}</span>
               </p>
             </div>  
           </div>
@@ -218,11 +240,10 @@ function LoadApiData(url){
       });
 }
 
-async function BuildPokemonCards(data){
+function BuildPokemonCards(data){
 
-  var htmlArr = data.finalData.map(async (character) => {
-        
-    return PokeCardHtml(character, data.maxStats)          
+  var htmlArr = data.finalData.map(async (character) => {   
+    return GeneratePokeCardHtml(character, data.maxStats)          
   })
   
   return Promise.all(htmlArr)
@@ -283,29 +304,58 @@ function initSearch(data){
 
       BuildPokemonCards(results)
       .then((html) => {
-
         msg.innerHTML = `${results.finalData.length}/${d.finalData.length}`;
         container.innerHTML = html;
-        attachFlipHander();
       }
       );
     },750));
+}
+
+
+function getEvolvesTo(name,species)
+{
+  if(name && species)
+  {
+    var evolution = species.filter((c) => c.evolves_from_species && c.evolves_from_species.name === name)[0];
+    return evolution ? evolution.name : null;
+  }
+  else
+  {
+    return null;
+  }
 }
 
 function transformData(apiDataSet,swordShieldData)
 {
     var res = [];
     if (apiDataSet){
-    //transform our API data first into a more friendly format
+      //build evolution chains here - start with the basic types and build up
+      var chains = apiDataSet.species
+                    .filter (s => !s.evolves_from_species)
+                    .map(s => {
+                        var basic = s.name;
+                        var stage1 = getEvolvesTo(s.name,apiDataSet.species);
+                        var stage2 = getEvolvesTo(stage1,apiDataSet.species);
+                        return [basic,stage1,stage2];
+                    });
+
+
+      //transform our API data first into a more friendly format
       apiDataSet.pokemon.forEach(p => {
         var species = apiDataSet.species.filter(el => el.name === p.species.name)[0] ;          
         var generation = apiDataSet.generations.filter(el => el.name === species.generation.name)[0];       
-        
+        var evolutionChain = chains.filter(c => c[0] === p.name|| c[1] === p.name || c[2] === p.name)[0];
+        var stage = "Basic"
+        if (evolutionChain && evolutionChain.indexOf(p.name) === 1) {stage = "Stage 1"}
+        else{
+          if (evolutionChain && evolutionChain.indexOf(p.name) === 2) {stage = "Stage 2"}
+        }
+
         res.push({
           id: p.id,
           name: p.name,
-          height: p.height,
-          weight: p.weight,
+          height: DecimeterToFeetAndInches(p.height),
+          weight: HectogramToPounds(p.weight),
           spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
           description: species.flavor_text_entries.filter(entry => entry.language.name === "en")[0].flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," "),
           base_stats: {
@@ -316,12 +366,12 @@ function transformData(apiDataSet,swordShieldData)
             SpecialDefense: p.stats.filter(el => el.stat.name === "special-defense" )[0].base_stat,
             Speed: p.stats.filter(el => el.stat.name === "speed" )[0].base_stat
           }, 
-          stage: species.evolves_from_species ? "Stage 1/2" : "Basic",
+          stage: stage,
           types: p.types.map(t => t.type.name),
           region: generation.main_region.name,
           generation: species.generation.name.replace("-"," "),
           evolves_from: species.evolves_from_species ? species.evolves_from_species.name.replace("-"," ") : "",
-          evolution_chain: [],
+          evolution_chain: evolutionChain,
           genus: species.genera.filter(el => el.language.name === "en")[0].genus,
           abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(",")
         });
@@ -329,39 +379,50 @@ function transformData(apiDataSet,swordShieldData)
   }
     //add in the additional data
     if(swordShieldData)
-    {
-        //ignore entries that have a number in them or that 
-        swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name)).forEach(p => {
-            //filter only those specific to Galar
-            if (res.filter(el => el.id === p.id).length === 0 ){
-              res.push(
-                {
-                  id: p.id,
-                  name: p.name,
-                  height: p.height,
-                  weight: p.weight,
-                  spriteURL: buildSpriteURL(p),
-                  description: p.description,
-                  base_stats: {
-                    HP: p.base_stats ? p.base_stats[0] : 0,
-                    Attack: p.base_stats ? p.base_stats[1] : 0,
-                    Defense : p.base_stats ? p.base_stats[2] : 0,
-                    SpecialAttack: p.base_stats ? p.base_stats[3] : 0,
-                    SpecialDefense: p.base_stats ? p.base_stats[4] : 0,
-                    Speed: p.base_stats ? p.base_stats[5] : 0,
-                  },
-                  stage: p.stage,
-                  abilities: p.abilities || [],
-                  types: p.types ? p.types.map(t=>t.toLowerCase()) : [],
-                  region: "Galar",
-                  generation: "Generation VIII",
-                  evolves_from: "",
-                  evolution_chain: [],
-                  genus: ""
-                  
-                }
-              );
-            }
+    {      
+
+      // build evolutions chains - using recursive function
+      var ssEvolutionChain = []
+      var findParent = function(node){
+        if(!node || !node.evolutions)
+        {return null}
+
+        var parent = swordShieldData.filter(el => el.name === node.evolutions[0].name)
+
+      }
+      //ignore entries that have a number in them or that are from another DEX
+      swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name)).forEach(p => {          
+
+          //filter only those specific to Galar
+          if (res.filter(el => el.id === p.id).length === 0 ){
+            res.push(
+              {
+                id: p.id,
+                name: p.name,
+                height: MetersToFeetAndInches(p.height), //in meters
+                weight: KilogramsToPounds(p.weight), //in kg
+                spriteURL: buildSpriteURL(p),
+                description: p.description,
+                base_stats: {
+                  HP: p.base_stats ? p.base_stats[0] : 0,
+                  Attack: p.base_stats ? p.base_stats[1] : 0,
+                  Defense : p.base_stats ? p.base_stats[2] : 0,
+                  SpecialAttack: p.base_stats ? p.base_stats[3] : 0,
+                  SpecialDefense: p.base_stats ? p.base_stats[4] : 0,
+                  Speed: p.base_stats ? p.base_stats[5] : 0,
+                },
+                stage: (p.stage && p.stage > 1 ? "Stage " + (p.stage - 1): "Basic"),
+                abilities: p.abilities || [],
+                types: p.types ? p.types.map(t=>t.toLowerCase()) : [],
+                region: "Galar",
+                generation: "Generation VIII",
+                evolves_from: "",
+                evolution_chain: [],
+                genus: ""
+                
+              }
+            );
+          }
         });
 
     }
@@ -384,31 +445,28 @@ function buildSpriteURL(p){
   return `https://img.pokemondb.net/sprites/home/normal/${name}.png`
 }
 
-function setMaxStats(data){
-  var maxHP = 0;
-  var maxDefense = 0;
-  var maxAttack = 0;
-  var maxSAttack = 0;
-  var maxSDefense = 0;
-  var maxSpeed = 0;
+function GetMaxStats(data){
 
-  data.finalData.forEach((p) => {
-    maxHP = Math.max(p.base_stats.HP,maxHP);
-    maxDefense = Math.max(p.base_stats.Defense,maxDefense);
-    maxAttack = Math.max(p.base_stats.Attack, maxAttack);
-    maxSpeed = Math.max(p.base_stats.Speed, maxSpeed);
-    maxSAttack = Math.max(p.base_stats.SpecialAttack, maxSAttack);
-    maxSDefense = Math.max(p.base_stats.SpecialDefense, maxSDefense);
+  var maxStats = {
+    HP: 0,
+    Defense: 0,
+    Attack: 0, 
+    SpecialAttack: 0,
+    SpecialDefense: 0,
+    Speed: 0
+  };
+
+
+  data.forEach((p) => {
+    maxStats.HP = Math.max(p.base_stats.HP,maxStats.HP);
+    maxStats.Defense = Math.max(p.base_stats.Defense,maxStats.Defense);
+    maxStats.Attack = Math.max(p.base_stats.Attack, maxStats.Attack);
+    maxStats.Speed = Math.max(p.base_stats.Speed, maxStats.Speed);
+    maxStats.SpecialAttack = Math.max(p.base_stats.SpecialAttack, maxStats.SpecialAttack);
+    maxStats.SpecialDefense = Math.max(p.base_stats.SpecialDefense, maxStats.SpecialDefense);
   });
 
-  data.maxStats = {}
-  data.maxStats.HP = maxHP;
-  data.maxStats.Defense = maxDefense;
-  data.maxStats.Attack = maxAttack;
-  data.maxStats.SpecialDefense = maxSDefense;
-  data.maxStats.SpecialAttack = maxSAttack;
-  data.maxStats.Speed = maxSpeed;
-  return data;
+  return maxStats;
 }
 
 function attachFlipHander(){
@@ -441,32 +499,20 @@ function init(containerName) {
         updateLoadingProgress("Loading Generations");
         return LoadApiData(generationURL);
       })
-/*       .then((generations) => {
-        dataSet.generations = generations;
-        updateLoadingProgress("Loading Types");
-        return LoadApiData(typeURL);
-      })
-      .then((types) => {
-        dataSet.types = types;
-        updateLoadingProgress("Loading Abilities");
-        return LoadApiData(abilityeURL);
-      }) */
-      .then((generations) =>{
-        dataSet.generations = generations;
+      .then((generations) => {
+        dataSet.generations = generations;               
         updateLoadingProgress("Loading Galar Data");
         return LoadJSON(swordShieldURL);
-      })
+      })      
       .then((swordShield) => {
- 
         updateLoadingProgress("Building Pokedex");
         dataSet.finalData = transformData(dataSet,swordShield);           
-        setMaxStats(dataSet);
+        dataSet.maxStats = GetMaxStats(dataSet.finalData);
         return BuildPokemonCards(dataSet);
       })
       .then((html)=>{
         initSearch(dataSet);        
-        document.getElementById(containerName).innerHTML = html;
-        attachFlipHander();
+        document.getElementById(containerName).innerHTML = html;        
         hideLoading();
       })
       .catch((error) => {
