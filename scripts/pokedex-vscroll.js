@@ -8,9 +8,6 @@ const evolutionsURL = "https://pokeapi.co/api/v2/evolution-chain?limit=1000";
 const typeURL = "https://pokeapi.co/api/v2/type?limit=100";
 const abilityeURL = "https://pokeapi.co/api/v2/ability?limit=2000";
 const swordShieldURL = "./data/swordshield.json";
-const baseImgUrl = "https://img.pokemondb.net/sprites/home/normal/"
-const baseImgUrlShiny = "https://img.pokemondb.net/sprites/home/shiny/"
-const baseSpriteUrl = "https://img.pokemondb.net/sprites/sword-shield/icon/"
 
 function openDatabase() {
   // If the browser doesn't support service worker,
@@ -111,7 +108,7 @@ function GeneratePokeCardHtml(character, maxStats) {
   var typesHtml = character.types.map((t) => `<li class="list-inline-item m-0 badge-circle bg-${t}"><img class="type-badge" src="images/type-images/${t}.svg" alt="${t}"/></li>`).join(``);                      
 
   var html = ` 
-  <div class="flip-div  mx-auto" onClick="this.classList.toggle('flipped');">
+  <div class="flip-div  mx-auto" onClick="this.classList.toggle('flipped')">
     <div class="flip-main my-1 mx-auto">
       <div class="front mx-auto">
         <div class="card shadow bg-${character.types[0]}" data-id="${character.id}">
@@ -119,12 +116,12 @@ function GeneratePokeCardHtml(character, maxStats) {
                   ${character.genus || ""}    HT: ${character.height}    WT: ${character.weight}lbs
           </div>
           <div class="bg-${character.types[0]}-dark rounded-top">
-            <img class="card-img-top mx-auto d-block pokemon" data-imgtype="normal" src="${character.imageUrlNormal}" onClick="toggleImageHandler(event)" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
+            <img class="card-img-top mx-auto d-block pokemon"  src="${character.spriteURL}" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
           </div>   
           <div class="pokemon-stage text-right pr-3 rounded-bottom">
             ${character.stage}
           </div>        
-          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">            
+          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">
             <div class="pokemon-types">
               <ul class="list-inline types p-0">
                 ${typesHtml}
@@ -132,15 +129,11 @@ function GeneratePokeCardHtml(character, maxStats) {
             </div>
             <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>              
             <p class="card-text mb-1"><small>${character.description || ""}</small></p>
-            <p class="card-text mb-1 text-center">
-              <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.generation}</span>
-              <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.region}</span>
-            </p>
-            <p class="card-text mb-1 text-center">              
+            <p class="card-text mb-1">
               <small>
-                <table><tr>
-                  ${(character.evolution_chain || []).filter(el => el).map(name => '<td class="text-center"><img src="' + buildSpriteURL(baseSpriteUrl,name)+ '"/><br/><span class="capitalize" style="font-size:10px">'+ name + '</span>').join("<td>\u21D2</td>")}
-                </tr></table>
+                <span class="text-uppercase">${character.generation}</span><br/>
+                Region: <span class="capitalize">${character.region}</span><br/>
+                <span class="capitalize">${(character.evolution_chain || []).join(" \u21D2 ")}</span>
               </small>
             </p>
           </div>
@@ -211,7 +204,7 @@ function GeneratePokeCardHtml(character, maxStats) {
           </div>
             <div>            
               <p class="small">
-                <span class="font-weight-bold">Abilities:</span><span class="capitalize">${character.abilities}</span>
+                <span class="font-weight-bold">Abilities:</span> ${character.abilities}
               </p>
             </div>  
           </div>
@@ -245,9 +238,10 @@ function LoadApiData(url){
       });
 }
 
-function BuildPokemonCards(data){
+async function BuildPokemonCards(data){
 
-  var htmlArr = data.finalData.map(async (character) => {   
+  var htmlArr = data.finalData.map(async (character) => {
+        
     return GeneratePokeCardHtml(character, data.maxStats)          
   })
   
@@ -307,12 +301,10 @@ function initSearch(data){
 
       var results = searchPokemon(d,el.value);                
 
-      BuildPokemonCards(results)
-      .then((html) => {
-        msg.innerHTML = `${results.finalData.length}/${d.finalData.length}`;
-        container.innerHTML = html;
-      }
-      );
+      initHyperList("pokemonCardDeck",{pokemon: results.finalData, maxStats: data.maxStats});
+      msg.innerHTML = `${results.finalData.length}/${d.finalData.length}`;
+
+      
     },750));
 }
 
@@ -334,7 +326,7 @@ function transformData(apiDataSet,swordShieldData)
 {
     var res = [];
     if (apiDataSet){
-      //build evolution chains here - start with the basic types and build up
+      //build evolution chains here - start with the basic types
       var chains = apiDataSet.species
                     .filter (s => !s.evolves_from_species)
                     .map(s => {
@@ -361,9 +353,7 @@ function transformData(apiDataSet,swordShieldData)
           name: p.name,
           height: DecimeterToFeetAndInches(p.height),
           weight: HectogramToPounds(p.weight),
-          //spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
-          imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
-          imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
+          spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
           description: species.flavor_text_entries.filter(entry => entry.language.name === "en")[0].flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," "),
           base_stats: {
             HP: p.stats.filter(el => el.stat.name === "hp" )[0].base_stat,
@@ -386,51 +376,42 @@ function transformData(apiDataSet,swordShieldData)
   }
     //add in the additional data
     if(swordShieldData)
-    {      
+    {
+        // build evolutions chains
 
-      // build evolutions chains - using recursive function
-      var ssEvolutionChain = []
-      var findParent = function(node){
-        if(!node || !node.evolutions)
-        {return null}
 
-        var parent = swordShieldData.filter(el => el.name === node.evolutions[0].name)
-
-      }
-      //ignore entries that have a number in them or that are from another DEX
-      swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name)).forEach(p => {          
-
-          //filter only those specific to Galar
-          if (res.filter(el => el.id === p.id).length === 0 ){
-            res.push(
-              {
-                id: p.id,
-                name: p.name,
-                height: MetersToFeetAndInches(p.height), //in meters
-                weight: KilogramsToPounds(p.weight), //in kg
-                imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
-                imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
-                description: p.description,
-                base_stats: {
-                  HP: p.base_stats ? p.base_stats[0] : 0,
-                  Attack: p.base_stats ? p.base_stats[1] : 0,
-                  Defense : p.base_stats ? p.base_stats[2] : 0,
-                  SpecialAttack: p.base_stats ? p.base_stats[3] : 0,
-                  SpecialDefense: p.base_stats ? p.base_stats[4] : 0,
-                  Speed: p.base_stats ? p.base_stats[5] : 0,
-                },
-                stage: (p.stage && p.stage > 1 ? "Stage " + (p.stage - 1): "Basic"),
-                abilities: p.abilities || [],
-                types: p.types ? p.types.map(t=>t.toLowerCase()) : [],
-                region: "Galar",
-                generation: "Generation VIII",
-                evolves_from: "",
-                evolution_chain: [],
-                genus: ""
-                
-              }
-            );
-          }
+        //ignore entries that have a number in them or that 
+        swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name)).forEach(p => {
+            //filter only those specific to Galar
+            if (res.filter(el => el.id === p.id).length === 0 ){
+              res.push(
+                {
+                  id: p.id,
+                  name: p.name,
+                  height: MetersToFeetAndInches(p.height), //in meters
+                  weight: KilogramsToPounds(p.weight), //in kg
+                  spriteURL: buildSpriteURL(p),
+                  description: p.description,
+                  base_stats: {
+                    HP: p.base_stats ? p.base_stats[0] : 0,
+                    Attack: p.base_stats ? p.base_stats[1] : 0,
+                    Defense : p.base_stats ? p.base_stats[2] : 0,
+                    SpecialAttack: p.base_stats ? p.base_stats[3] : 0,
+                    SpecialDefense: p.base_stats ? p.base_stats[4] : 0,
+                    Speed: p.base_stats ? p.base_stats[5] : 0,
+                  },
+                  stage: (p.stage && p.stage > 1 ? "Stage " + (p.stage - 1): "Basic"),
+                  abilities: p.abilities || [],
+                  types: p.types ? p.types.map(t=>t.toLowerCase()) : [],
+                  region: "Galar",
+                  generation: "Generation VIII",
+                  evolves_from: "",
+                  evolution_chain: [],
+                  genus: ""
+                  
+                }
+              );
+            }
         });
 
     }
@@ -438,21 +419,19 @@ function transformData(apiDataSet,swordShieldData)
     return res;
 }
 
-function buildSpriteURL(baseUrl, p){
+function buildSpriteURL(p){
   //replace non alphanumeric characters with dashes
   //specific replacement for asterisk to just remove it
-  if(!baseUrl || !p )
-  {
-    return ""
-  }
-  var name = p.replace("’","")
+  
+  var name = p.name
+              .replace("’","")
               .replace(/[\W_]+/g,"-")
               .toLowerCase()
 
    //transform those that have alola to alolan to match PokemonDB image format
   if (name.endsWith("alola")) {name = name + "n"}
 
-  return `${baseUrl}${name}.png`
+  return `https://img.pokemondb.net/sprites/home/normal/${name}.png`
 }
 
 function GetMaxStats(data){
@@ -492,6 +471,33 @@ function updateLoadingProgress(msg){
   document.getElementById("loadingStatus").innerText = msg;
 }
 
+function initHyperList(containerName,data)
+{
+  var container = document.getElementById(containerName);
+  var config = {
+    height: (window.innerHeight - 40),
+    itemHeight: 375,
+    total: data.pokemon.length,
+    total: 1500,
+    // Set to true to put into 'chat mode'.
+    reverse: false,
+    scrollerTagName: 'div',
+
+    generate(row) {      
+      var el = document.createElement("div");
+      el.innerHTML = GeneratePokeCardHtml(data.pokemon[row],data.maxStats);
+      return el;
+    }
+  };
+
+  var list = HyperList.create(container, config);
+
+  window.onresize = e => {
+    config.height = window.innerHeight;
+    list.refresh(container, config);
+  };  
+}
+
 function init(containerName) {  
 
     var dataSet = {};
@@ -521,8 +527,10 @@ function init(containerName) {
         return BuildPokemonCards(dataSet);
       })
       .then((html)=>{
+        initHyperList(containerName,{pokemon: dataSet.finalData, maxStats: dataSet.maxStats});
         initSearch(dataSet);        
-        document.getElementById(containerName).innerHTML = html;        
+        //document.getElementById(containerName).innerHTML = html;
+        //attachFlipHander();
         hideLoading();
       })
       .catch((error) => {

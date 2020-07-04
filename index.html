@@ -107,7 +107,22 @@
     }
   </script>
  
-
+  <script>
+    function toggleImageHandler(ev)
+    {
+      
+      if(ev.target.dataset.imgtype ==="normal"){
+        var newUrl = ev.target.src.replace("/normal/","/shiny/");
+        ev.target.src= newUrl;
+        ev.target.dataset.imgtype="shiny";
+      }else{
+        var newURL = ev.target.src.replace("/shiny/","/normal/");
+        ev.target.src = newURL;
+        ev.target.dataset.imgtype="normal";
+      } 
+      ev.stopPropagation();
+    }
+  </script>
   <script type="module" src="/scripts/pokedex.js"></script>
 </body>
 
