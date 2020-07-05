@@ -11,29 +11,12 @@ div.card
 {
     min-width: 275px;
     max-width: 275px;
-    height:350px;
+    height:365px;
 }
 div.card {    
     padding: 10px;
 }
 
-/*
-.form-control-feedback {
-    position: absolute;    
-    z-index: 2;
-    display: block;   
-    text-align: center;
-    pointer-events: none;
-}
-.form-control-feedback.right{
-    top: .5rem;
-    right: .5rem;
-}
-.form-control-feedback.left{
-    top: .5rem;
-    left: .5rem;
-}
-*/
 
 /* Smartphones (portrait and landscape) ----------- */
 @media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
@@ -107,6 +90,15 @@ img.type-badge{
     padding-top: 4px;
 }
 
+img.type-badge.small{
+    height:16px;
+    min-height: 16px;
+    width: 16px;
+    min-width: 16px;
+    padding-left: 0px;
+    padding-top: 4px;
+}
+
 .list-inline.types > li.badge-circle{    
     width:32px;
     max-width:32px;
@@ -116,6 +108,17 @@ img.type-badge{
     line-height:0;
     border-radius:50%;
 }
+.list-inline.types > li.badge-circle.small{    
+    width:20px;
+    max-width:20px;
+    height:20px; 
+    max-height:20px;
+    text-align:center;
+    line-height:0;
+    border-radius:50%;
+}
+
+
 
 .bg-bug-light{background:#C6D16E}
 .bg-bug{background-color:#A8B820}

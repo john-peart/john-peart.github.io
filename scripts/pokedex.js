@@ -12,6 +12,51 @@ const baseImgUrl = "https://img.pokemondb.net/sprites/home/normal/"
 const baseImgUrlShiny = "https://img.pokemondb.net/sprites/home/shiny/"
 const baseSpriteUrl = "https://img.pokemondb.net/sprites/sword-shield/icon/"
 
+//https://github.com/Jay2645/pokemon-team-builder/blob/master/js/teamgen.js
+
+var TYPE_NAMES = ["normal", "fire", "water", "electric", "grass", "ice", "fighting", "poison", "ground", "flying", "psychic", "bug", "rock", "ghost", "dragon", "dark", "steel", "fairy"];
+var TYPE_ORDER = {
+		normal: 0,
+		fire: 1,
+		water: 2,
+		electric: 3,
+		grass: 4,
+		ice: 5,
+		fighting: 6,
+		poison: 7,
+		ground: 8,
+		flying: 9,
+		psychic: 10,
+		bug: 11,
+		rock: 12,
+		ghost: 13,
+		dragon: 14,
+		dark: 15,
+    steel: 16,
+    fairy: 17
+};
+var TYPE_CHART = {
+	  normal: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.5, 0, 1, 1, 0.5, 1],
+	  fire: [1, 0.5, 0.5, 1, 2, 2, 1, 1, 1, 1, 1, 2, 0.5, 1, 0.5, 1, 2, 1],
+	  water: [1, 2, 0.5, 1, 0.5, 1, 1, 1, 2, 1, 1, 1, 2, 1, 0.5, 1, 1, 1],
+	  electric: [1, 1, 2, 0.5, 0.5, 1, 1, 1, 0, 2, 1, 1, 1, 1, 0.5, 1, 1, 1],
+	  grass: [1, 0.5, 2, 1, 0.5, 1, 1, 0.5, 2, 0.5, 1, 0.5, 2, 1, 0.5, 1, 0.5, 1],
+	  ice: [1, 0.5, 0.5, 1, 2, 0.5, 1, 1, 2, 2, 1, 1, 1, 1, 2, 1, 0.5, 1],
+	  fighting: [2, 1, 1, 1, 1, 2, 1, 0.5, 1, 0.5, 0.5, 0.5, 2, 0, 1, 2, 2, 0.5],
+	  poison: [1, 1, 1, 1, 2, 1, 1, 0.5, 0.5, 1, 1, 1, 0.5, 0.5, 1, 1, 0, 2],
+	  ground: [1, 2, 1, 2, 0.5, 1, 1, 2, 1, 0, 1, 0.5, 2, 1, 1, 1, 2, 1],
+	  flying: [1, 1, 1, 0.5, 2, 1, 2, 1, 1, 1, 1, 2, 0.5, 1, 1, 1, 0.5, 1],
+	  psychic: [1, 1, 1, 1, 1, 1, 2, 2, 1, 1, 0.5, 1, 1, 1, 1, 0, 0.5, 1],
+	  bug: [1, 0.5, 1, 1, 2, 1, 0.5, 0.5, 1, 0.5, 2, 1, 1, 0.5, 1, 2, 0.5, 0.5],
+	  rock: [1, 2, 1, 1, 1, 2, 0.5, 1, 0.5, 2, 1, 2, 1, 1, 1, 1, 0.5, 1],
+	  ghost: [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 0.5, 0.5, 1],
+	  dragon: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 0.5, 0],
+	  dark: [1, 1, 1, 1, 1, 1, 0.5, 1, 1, 1, 2, 1, 1, 2, 1, 0.5, 0.5, 0.5],
+    steel: [1, 0.5, 0.5, 0.5, 1, 2, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 0.5, 2],
+    fairy: [1, 0.5, 1, 1, 1, 1, 2, 0.5, 1, 1, 1, 1, 1, 1, 2, 2, 0.5, 1]
+};
+
+
 function openDatabase() {
   // If the browser doesn't support service worker,
   // we don't care about having a database
@@ -87,23 +132,74 @@ function FormatFeetAndInches(valueInFeet)
   return `${feet}' ${inches}"`;
 }
 
-function getStengthsAndWeekness(typeArr)
+function getStrongAgainst(types)
 {
-  var res = {};
-  res.double_damage_to = [];
-  res.double_damage_from = [];
-  res.half_damage_to = [];
-  res.half_damage_from = [];
+    //the strengths will be based on the combination of the types
+    var results = []
+    if(types)
+    {
+      types.forEach(t => {
+        //strengths will go across the array
+        for(let i = 0; i<= TYPE_NAMES.length; i++ )
+        {
+          if(TYPE_CHART[t][i] > 1)
+          {results.push(TYPE_NAMES[i])}
+        }
+      })
+    }
+    return results;
+}
 
-  typeArr.forEach((t) => {
-    res.double_damage_to.push(...t.damage_relations.double_damage_to.map(el => el.name));
-    res.half_damage_to.push(...t.damage_relations.half_damage_to.map(el => el.name));
-    res.double_damage_from.push(...t.damage_relations.double_damage_from.map(el => el.name));
-    res.half_damage_from.push(...t.damage_relations.half_damage_from.map(el => el.name));
-  })
-  
-  return res;
-  
+function getWeakTo(types)
+{
+  //loop through types and return for any that are greater than 1
+  //if types has more than 1 entry, we must first multiply the type chart values
+  var calculated = Array(TYPE_NAMES.length).fill(1);
+  if(types)
+  {
+    types.forEach(t => {
+      var index = TYPE_ORDER[t.toLowerCase()];
+      //defense will go down the array
+      TYPE_NAMES.forEach(tn => {
+        calculated[TYPE_ORDER[tn]] *= TYPE_CHART[tn][index];
+      })
+    })
+    var res = []
+    for(let i = 0; i<= TYPE_NAMES.length; i++)
+    {
+      if(calculated[i] > 1)
+      {
+        res.push(TYPE_NAMES[i]);    
+      }
+    }
+    return res;
+  }
+}
+
+function getResistantTo(types)
+{
+//loop through types and return for any that are less than 1
+  //if types has more than 1 entry, we must first multiply the type chart values
+  var calculated = Array(TYPE_NAMES.length).fill(1);
+  if(types)
+  {
+    types.forEach(t => {
+      var index = TYPE_ORDER[t.toLowerCase()];
+      //defense will go down the array
+      TYPE_NAMES.forEach(tn => {
+        calculated[TYPE_ORDER[tn]] *= TYPE_CHART[tn][index];
+      })
+    })
+    var res = []
+    for(let i = 0; i<= TYPE_NAMES.length; i++)
+    {
+      if(calculated[i] < 1)
+      {
+        res.push(TYPE_NAMES[i]);    
+      }
+    }
+    return res;
+  }
 }
 
 function GeneratePokeCardHtml(character, maxStats) {
@@ -201,14 +297,26 @@ function GeneratePokeCardHtml(character, maxStats) {
                 </tr>
               </tbody>
             </table>           
-            <div class="pt-3">            
-            <p class="small">
-              <span class="font-weight-bold">Strong against:</span>
-            </p>
-            <p class="small">
-              <span class="font-weight-bold">Weak To:</span> 
-            </p>
-          </div>
+            <div class="pt-1">            
+              <p class="small">
+              <ul class="list-inline types p-0">
+                  <li class="list-inline-item font-weight-bold mr-1 small">Strong:</li>
+                  ${character.strong_against.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
+                </ul>
+              </p>
+              <p class="small">
+                <ul class="list-inline types p-0">
+                  <li class="list-inline-item font-weight-bold mr-1 small">Weak:</li>
+                  ${character.weak_to.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
+                </ul> 
+              </p>
+              <p class="small">
+                <ul class="list-inline types p-0">
+                  <li class="list-inline-item font-weight-bold mr-1 small">Resistant:</li>
+                  ${character.resistant_to.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
+                </ul> 
+              </p>
+            </div>
             <div>            
               <p class="small">
                 <span class="font-weight-bold">Abilities:</span><span class="capitalize">${character.abilities}</span>
@@ -331,17 +439,6 @@ function getEvolvesTo(name,species)
   }
 }
 
-function getGalarEvolution(name,data){
-  
-  if(name && data)
-  {
-
-  }
-  var evolutions = [name];
-  
-  return evolutions
-}
-
 function transformData(apiDataSet,swordShieldData)
 {
     var res = [];
@@ -453,6 +550,12 @@ function transformData(apiDataSet,swordShieldData)
         });
 
     }
+
+    res.forEach(p => {
+      p.strong_against = getStrongAgainst(p.types);
+      p.weak_to = getWeakTo(p.types);
+      p.resistant_to = getResistantTo(p.types);
+    })
 
     return res;
 }
