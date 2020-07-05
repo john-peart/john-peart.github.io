@@ -304,13 +304,14 @@ function initSearch(data){
   el.addEventListener('input', debounce(()=>{
       //clear out the screen and show something if search takes longer than x milliseconds
       container.innerHTML = "";
-
+      document.getElementById("loading").classList.remove("d-none");
       var results = searchPokemon(d,el.value);                
 
       BuildPokemonCards(results)
       .then((html) => {
         msg.innerHTML = `${results.finalData.length}/${d.finalData.length}`;
         container.innerHTML = html;
+        document.getElementById("loading").classList.add("d-none");
       }
       );
     },750));
@@ -328,6 +329,17 @@ function getEvolvesTo(name,species)
   {
     return null;
   }
+}
+
+function getGalarEvolution(name,data){
+  
+  if(name && data)
+  {
+
+  }
+  var evolutions = [name];
+  
+  return evolutions
 }
 
 function transformData(apiDataSet,swordShieldData)
@@ -380,7 +392,7 @@ function transformData(apiDataSet,swordShieldData)
           evolves_from: species.evolves_from_species ? species.evolves_from_species.name.replace("-"," ") : "",
           evolution_chain: evolutionChain,
           genus: species.genera.filter(el => el.language.name === "en")[0].genus,
-          abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(",")
+          abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(", ")
         });
     });
   }
@@ -388,17 +400,24 @@ function transformData(apiDataSet,swordShieldData)
     if(swordShieldData)
     {      
 
-      // build evolutions chains - using recursive function
-      var ssEvolutionChain = []
-      var findParent = function(node){
-        if(!node || !node.evolutions)
-        {return null}
-
-        var parent = swordShieldData.filter(el => el.name === node.evolutions[0].name)
-
-      }
       //ignore entries that have a number in them or that are from another DEX
-      swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name)).forEach(p => {          
+      var ssFiltered = swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name))
+
+      // build evolutions chains
+      var ssEvolutionChain = []
+      ssEvolutionChain = ssFiltered.filter(el => el.evolutions && el.evolutions.length > 0 && el.stage && el.stage === 1)
+                      .map(s => {
+                        var basic = s.name;
+                        var stage1 = s.evolutions[0] ? s.evolutions[0].species : null ;
+                        if(stage1){stage1 = stage1.replace(/-\d/,"")}
+                        var stage2 = swordShieldData.filter(el => el.name === stage1)[0];
+                        if(stage2 && stage2.evolutions && stage2.evolutions.length > 0){stage2 = stage2.evolutions[0].species.replace(/-\d/,"")}
+                        else{stage2 = null}
+                        return [basic,stage1,stage2];
+                    });
+
+
+      ssFiltered.forEach(p => {          
 
           //filter only those specific to Galar
           if (res.filter(el => el.id === p.id).length === 0 ){
@@ -420,12 +439,12 @@ function transformData(apiDataSet,swordShieldData)
                   Speed: p.base_stats ? p.base_stats[5] : 0,
                 },
                 stage: (p.stage && p.stage > 1 ? "Stage " + (p.stage - 1): "Basic"),
-                abilities: p.abilities || [],
+                abilities: (p.abilities || []).join(", "),
                 types: p.types ? p.types.map(t=>t.toLowerCase()) : [],
                 region: "Galar",
                 generation: "Generation VIII",
                 evolves_from: "",
-                evolution_chain: [],
+                evolution_chain: ssEvolutionChain.filter(c => c[0] === p.name|| c[1] === p.name || c[2] === p.name)[0],
                 genus: ""
                 
               }
@@ -521,6 +540,7 @@ function init(containerName) {
         return BuildPokemonCards(dataSet);
       })
       .then((html)=>{
+        document.getElementById("record_count").innerText = dataSet.finalData.length;
         initSearch(dataSet);        
         document.getElementById(containerName).innerHTML = html;        
         hideLoading();
