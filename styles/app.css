@@ -272,5 +272,5 @@ td.stat-label{
 
 /* HYPERLIST VIRTUAL SCROLL CLASS */
 .vrow{
-    left:calc(50% - 125px);
+    left:calc(50% - 170px);
 }

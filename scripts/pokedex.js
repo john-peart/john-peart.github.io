@@ -215,7 +215,7 @@ function GeneratePokeCardHtml(character, maxStats) {
                   ${character.genus || ""}    HT: ${character.height}    WT: ${character.weight}lbs
           </div>
           <div class="bg-${character.types[0]}-dark rounded-top">
-            <img class="card-img-top mx-auto d-block pokemon" data-imgtype="normal" src="${character.imageUrlNormal}" onClick="toggleImageHandler(event)" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
+            <img class="card-img-top mx-auto d-block pokemon" data-imgtype="normal" data-url="${character.imageUrlNormal}" src="${character.imageUrlNormal}" onClick="toggleImageHandler(event)" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
           </div>   
           <div class="pokemon-stage text-right pr-3 rounded-bottom">
             ${character.stage}

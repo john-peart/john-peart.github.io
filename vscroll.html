@@ -37,10 +37,35 @@
   <link rel="icon" sizes="512x512" href="/images/icon-512x512.png">
   <link rel="apple-touch-icon" sizes="512x512" href="/images/icon-512x512.png">
 
+  <style>
+    body, html {
+      padding: 0;
+      margin: 0;
+      height: 100%;
+      width: 100%;
+      min-height: 100%;
+      min-width: 100%;      
+    }
+    body {
+      overflow: hidden;
+    }
+
+    @media
+    only screen and (-webkit-min-device-pixel-ratio : 1.5),
+    only screen and (min-device-pixel-ratio : 1.5) {
+      .container {
+        width: 100%;
+        height: 100%;
+        min-height: 100%;
+      }
+    }
+
+</style>
+
 </head>
 
 <body>
-  <div id="header" class="container mx-auto d-none">
+  <div id="header" class="pr-2 d-none">
     <!-- Search form -->
     <div class="form-horizontal">      
       <span class="search-icon"><i class="fas fa-search text-info " aria-hidden="true"></i></span>
@@ -48,8 +73,8 @@
       <span class="text-info search-count"><small id="record_count">-</small></span>
     </div>     
   </div>
-  <div id="pokemonContainer" class="container mx-auto d-none">    
-    <div id="pokemonCardDeck" class="card-deck">
+  <div id="pokemonContainer">        
+    <div id="pokemonCardDeck">
     </div>
   </div>
   <div id="loading" class="container text-center mt-5" style="position:relative">
@@ -57,45 +82,8 @@
     <div id="loadingGif">
       <img src="/images/simple_pokeball.gif"  style="margin-top: -50px;z-index: 1;max-width: 350px;" alt="">      
     </div>
-    <h4 id="loadingStatus" class="text-white text-center">Loading...</h4>
-    
-    
+    <h4 id="loadingStatus" class="text-white text-center">Loading...</h4>              
   </div>
-
-  <template id="pokecard">
-    <div class="flip-div my-1 mx-auto">
-      <div class="flip-main">
-        <div class="front">
-          <div class="card shadow bg-grass" data-id="1">
-            <div class="bg-grass-dark rounded-top">
-              <img class="card-img-top mx-auto d-block pokemon"  src="images/image-placeholder.png" alt="Card image cap" />
-            </div>          
-            <div class="card-body bg-grass-light rounded-bottom">
-                <div class="pokemon-types">
-                  <span class="capitalize badge badge-grass mr-1 px-3 py-1">Grass</span>
-                </div>
-                <h4 class="card-title text-center capitalize mb-1">Character</h4>              
-                <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
-                <p class="card-text mb-1"><small>
-                  Generation I<br/>
-                  Height: 1'11'<br/>
-                  Weight: 10lbs<br>
-                  Region: Kanto
-                  </small>
-                </p>
-            </div>
-          </div>
-        </div>
-        <div class="back ">
-          <div class="card shadow bg-grass" data-id="1">
-            <div class="card-body bg-grass-light rounded-bottom">
-              <p class="card-text mb-1"><small>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Quisque pulvinar orci consequat suscipit accumsan. Suspendisse nec tempus lectus</small></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </template>
   
   <script>
     // Check that service workers are supported
@@ -106,25 +94,25 @@
       });
     }
   </script>
- 
   <script>
     function toggleImageHandler(ev)
     {
+      
       if(ev.target.dataset.imgtype ==="normal"){
-        var newUrl = ev.target.dataset.url.replace("/normal/","/shiny/");
-        ev.target.url=newUrl;
+        var newUrl = ev.target.src.replace("/normal/","/shiny/");
         ev.target.src= newUrl;
         ev.target.dataset.imgtype="shiny";
       }else{
-        var newUrl = ev.target.dataset.url.replace("/shiny/","/normal/");
-        ev.target.url=newUrl;
-        ev.target.src = newUrl;
+        var newURL = ev.target.src.replace("/shiny/","/normal/");
+        ev.target.src = newURL;
         ev.target.dataset.imgtype="normal";
       } 
       ev.stopPropagation();
     }
   </script>
-  <script type="module" src="/scripts/pokedex.js"></script>
+ 
+  <script type="text/javascript" src="/scripts/hyperlist.js"></script>
+  <script type="module" src="/scripts/pokedex-vscroll.js"></script>
 </body>
 
 </html>

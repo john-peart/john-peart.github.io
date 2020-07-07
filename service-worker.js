@@ -7,6 +7,7 @@ workbox.setConfig({
 //precache local resources and CDN resources
 workbox.precaching.precacheAndRoute([
   {url: 'index.html', revision: null},
+  {url: 'vscroll.html', revision: null},
   {url: 'manifest.json', revision: null},
   {url: '/images/pokemon_logo_1024.png', revision: null},
   {url: '/images/simple_pokeball.gif', revision: null},
@@ -17,9 +18,13 @@ workbox.precaching.precacheAndRoute([
   {url: '/images/favicon-16x16.png', revision: null},
   {url: '/images/favicon-32x32.png', revision: null},
   {url: '/images/image-placeholder.png', revision: null},
+  {url: '/data/swordshield.json', revision: null},
   {url: 'https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css', revision: null},
   {url: 'https://storage.googleapis.com/workbox-cdn/releases/5.1.2/workbox-sw.js', revision: null},
-  {url: 'https://use.fontawesome.com/releases/v5.7.0/css/all.css',revision: null}
+  {url: 'https://use.fontawesome.com/releases/v5.7.0/css/all.css',revision: null},
+  {url: 'https://use.fontawesome.com/releases/v5.7.0/webfonts/fa-solid-900.woff2', revision:null},
+  {url: 'https://use.fontawesome.com/releases/v5.7.0/webfonts/fa-solid-900.woff', revision:null},
+  {url: 'https://use.fontawesome.com/releases/v5.7.0/webfonts/fa-solid-900.ttf', revision:null}
 ]);
 
 
