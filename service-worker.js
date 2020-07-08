@@ -7,7 +7,7 @@ workbox.setConfig({
 //precache local resources and CDN resources
 workbox.precaching.precacheAndRoute([
   {url: 'index.html', revision: null},
-  {url: 'vscroll.html', revision: null},
+  {url: 'full.html', revision: null},
   {url: 'manifest.json', revision: null},
   {url: '/images/pokemon_logo_1024.png', revision: null},
   {url: '/images/simple_pokeball.gif', revision: null},
