@@ -392,9 +392,9 @@ function searchPokemon(data, searchTerm){
   {
     var filtered = data.finalData.filter((val) => {
       return val.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  || 
-            val.types.findIndex(
-              type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
-            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  
+            val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
+            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
+            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1
             
     });        
     return {
@@ -472,7 +472,6 @@ function transformData(apiDataSet,swordShieldData)
           name: p.name,
           height: DecimeterToFeetAndInches(p.height),
           weight: HectogramToPounds(p.weight),
-          //spriteURL: p.sprites['front_default'] || buildSpriteURL(p),
           imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
           imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
           description: species.flavor_text_entries.filter(entry => entry.language.name === "en")[0].flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," "),

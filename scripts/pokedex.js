@@ -387,9 +387,9 @@ function searchPokemon(data, searchTerm){
   {
     var filtered = data.finalData.filter((val) => {
       return val.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  || 
-            val.types.findIndex(
-              type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
-            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  
+            val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
+            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
+            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1
             
     });        
     return {
