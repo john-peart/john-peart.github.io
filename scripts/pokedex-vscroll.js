@@ -503,7 +503,7 @@ function transformData(apiDataSet,swordShieldData)
 
       // build evolutions chains
       var ssEvolutionChain = []
-      ssEvolutionChain = ssEvolutionChain = ssFiltered.filter(el => 
+      ssEvolutionChain = ssFiltered.filter(el => 
                           el.evolutions && 
                           el.evolutions.length > 0 && 
                           swordShieldData.filter(el => (el.evolutions[0]||{}).species === el.name).length === 0 // nothing that evovles to this
@@ -626,7 +626,7 @@ function generateHLConfig(pokemonData,maxStats)
 {
   return {
     height: (window.innerHeight - 40),
-    itemHeight: 375,
+    itemHeight: 390,
     total: pokemonData.length,
     // Set to true to put into 'chat mode'.
     reverse: false,
