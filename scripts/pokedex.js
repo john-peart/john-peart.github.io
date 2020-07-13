@@ -386,10 +386,10 @@ function searchPokemon(data, searchTerm){
   else
   {
     var filtered = data.finalData.filter((val) => {
-      return val.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  || 
+      return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
             val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
             val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
-            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1
+            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
             
     });        
     return {
@@ -443,7 +443,7 @@ function transformData(apiDataSet,swordShieldData)
 {
     var res = [];
     if (apiDataSet){
-      //build evolution chains here - start with the basic types and build up
+      //build evolution chains here - start with the basic types
       var chains = apiDataSet.species
                     .filter (s => !s.evolves_from_species)
                     .map(s => {
@@ -503,18 +503,19 @@ function transformData(apiDataSet,swordShieldData)
       // build evolutions chains
       var ssEvolutionChain = []
       ssEvolutionChain = ssFiltered.filter(el => 
-        el.evolutions && 
-        el.evolutions.length > 0 && 
-        swordShieldData.filter(el => (el.evolutions[0]||{}).species === el.name).length === 0 // nothing that evovles to this
-      ).map(s => {
-        var basic = s.name;
-        var stage1 = s.evolutions[0] ? s.evolutions[0].species : null ;
-        if(stage1){stage1 = stage1.replace(/-\d/,"")}
-        var stage2 = swordShieldData.filter(el => el.name === stage1)[0];
-        if(stage2 && stage2.evolutions && stage2.evolutions.length > 0){stage2 = stage2.evolutions[0].species.replace(/-\d/,"")}
-        else{stage2 = null}
-        return [basic,stage1,stage2];
-      });
+                          el.evolutions && 
+                          el.evolutions.length > 0 && 
+                          swordShieldData.filter(el => (el.evolutions[0]||{}).species === el.name).length === 0 // nothing that evovles to this
+                        )
+                          .map(s => {
+                            var basic = s.name;
+                            var stage1 = s.evolutions[0] ? s.evolutions[0].species : null ;
+                            if(stage1){stage1 = stage1.replace(/-\d/,"")}
+                            var stage2 = swordShieldData.filter(el => el.name === stage1)[0];
+                            if(stage2 && stage2.evolutions && stage2.evolutions.length > 0){stage2 = stage2.evolutions[0].species.replace(/-\d/,"")}
+                            else{stage2 = null}
+                            return [basic,stage1,stage2];
+                        });
 
 
       ssFiltered.forEach(p => {          
@@ -571,6 +572,7 @@ function buildSpriteURL(baseUrl, p){
     return ""
   }
   var name = p.replace("’","")
+              .replace("-totem","")
               .replace(/[\W_]+/g,"-")
               .toLowerCase()
 

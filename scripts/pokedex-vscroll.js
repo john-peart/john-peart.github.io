@@ -391,10 +391,10 @@ function searchPokemon(data, searchTerm){
   else
   {
     var filtered = data.finalData.filter((val) => {
-      return val.name.toLowerCase().startsWith(searchTerm.toLowerCase().trim())  || 
+      return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
             val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
             val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
-            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1
+            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
             
     });        
     return {
@@ -573,6 +573,7 @@ function buildSpriteURL(baseUrl, p){
     return ""
   }
   var name = p.replace("’","")
+              .replace("-totem","")
               .replace(/[\W_]+/g,"-")
               .toLowerCase()
 
