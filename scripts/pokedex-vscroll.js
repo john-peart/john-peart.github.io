@@ -212,9 +212,9 @@ function GeneratePokeCardHtml(character, maxStats) {
   var typesHtml = character.types.map((t) => `<li class="list-inline-item m-0 badge-circle bg-${t}"><img class="type-badge" src="images/type-images/${t}.svg" alt="${t}"/></li>`).join(``);                      
 
   var html = ` 
-  <div class="flip-div  mx-auto" onClick="this.classList.toggle('flipped');">
-    <div class="flip-main my-1 mx-auto">
-      <div class="front mx-auto">
+  <div class="flip-div" onClick="this.classList.toggle('flipped');">
+    <div class="flip-main my-1">
+      <div class="front">
         <div class="card shadow bg-${character.types[0]}" data-id="${character.id}">
           <div class="pokemon-htwt text-center rounded-top font-italic">
                   ${character.genus || ""}    HT: ${character.height}    WT: ${character.weight}lbs
@@ -247,7 +247,7 @@ function GeneratePokeCardHtml(character, maxStats) {
           </div>
         </div>
       </div>
-      <div class="back mx-auto">
+      <div class="back">
         <div class="card shadow bg-${character.types[0]}" data-id="1">
           <div class="card-body bg-${character.types[0]}-light rounded">
             <table class="stats">
@@ -330,7 +330,7 @@ function GeneratePokeCardHtml(character, maxStats) {
           </div>
         </div>
       </div>
-    </div>
+    </div>  
   </div>
   `;
 
@@ -383,6 +383,10 @@ function debounce(callback, wait) {
   };
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function searchPokemon(data, searchTerm){
   if(!searchTerm || searchTerm.trim() ==="")
   {
@@ -390,13 +394,22 @@ function searchPokemon(data, searchTerm){
   }
   else
   {
-    var filtered = data.finalData.filter((val) => {
-      return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
-            val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
-            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
-            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
-            
-    });        
+    var filtered = [];
+    if (isNumeric(searchTerm))
+    {
+      filtered = data.finalData.filter((val) => {
+        return val.id == searchTerm;
+      })
+    }
+    else {
+      filtered = data.finalData.filter((val) => {
+        return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
+              val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
+              val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
+              (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
+              
+      });      
+    }  
     return {
       pokemon: data.pokemon,
       types: data.types,
@@ -408,6 +421,8 @@ function searchPokemon(data, searchTerm){
     } 
   }
 }
+
+
 
 function initSearch(data){
   const container = document.getElementById("pokemonCardDeck");

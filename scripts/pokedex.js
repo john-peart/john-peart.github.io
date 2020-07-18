@@ -378,6 +378,10 @@ function debounce(callback, wait) {
   };
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
+
 function searchPokemon(data, searchTerm){
   if(!searchTerm || searchTerm.trim() ==="")
   {
@@ -385,13 +389,22 @@ function searchPokemon(data, searchTerm){
   }
   else
   {
-    var filtered = data.finalData.filter((val) => {
-      return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
-            val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
-            val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
-            (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
-            
-    });        
+    var filtered = [];
+    if (isNumeric(searchTerm))
+    {
+      filtered = data.finalData.filter((val) => {
+        return val.id == searchTerm;
+      })
+    }
+    else {
+      filtered = data.finalData.filter((val) => {
+        return val.name.toLowerCase().includes(searchTerm.toLowerCase().trim())  || 
+              val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
+              val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
+              (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
+              
+      });      
+    }  
     return {
       pokemon: data.pokemon,
       types: data.types,
