@@ -511,7 +511,7 @@ function transformData(apiDataSet,swordShieldData)
     {      
 
       //ignore entries that have a number in them or that are from another DEX
-      var ssFiltered = swordShieldData.filter(el => el.galar_dex != "foreign" && !/\d/.test(el.name))
+      var ssFiltered = swordShieldData.filter(el => !/\d/.test(el.name))
 
       // build evolutions chains
       var ssEvolutionChain = []
