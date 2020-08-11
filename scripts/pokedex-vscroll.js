@@ -544,8 +544,8 @@ function transformData(apiDataSet,swordShieldData)
                 name: p.name,
                 height: MetersToFeetAndInches(p.height), //in meters
                 weight: KilogramsToPounds(p.weight), //in kg
-                imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
-                imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
+                imageUrlNormal: (p.img_url || buildSpriteURL(baseImgUrl,p.name)),
+                imageUrlShiny: (p.shiny_img_url || buildSpriteURL(baseImgUrlShiny, p.name)),
                 description: p.description,
                 base_stats: {
                   HP: p.base_stats ? p.base_stats[0] : 0,
