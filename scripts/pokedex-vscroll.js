@@ -456,6 +456,24 @@ function getEvolvesTo(name,species)
   }
 }
 
+function getStat(statArray,statName)
+{
+  var stat = statArray.filter(el => el.stat.name === statName )[0];
+  return stat ? stat.base_stat : 0;
+}
+
+function getFlavorText(ftEntries)
+{
+  var ft = ftEntries.filter(entry => entry.language.name === "en")[0]
+  return ft ? ft.flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," ") : "";    
+}
+
+function getGenus(species)
+{
+  var genera = species.genera.filter(el => el.language.name === "en")[0];
+  return genera ? genera.genus : 0;
+}
+
 function transformData(apiDataSet,swordShieldData)
 {
     var res = [];
@@ -482,6 +500,8 @@ function transformData(apiDataSet,swordShieldData)
           if (evolutionChain && evolutionChain.indexOf(p.name) === 2) {stage = "Stage 2"}
         }
 
+            
+
         res.push({
           id: p.id,
           name: p.name,
@@ -489,14 +509,14 @@ function transformData(apiDataSet,swordShieldData)
           weight: HectogramToPounds(p.weight),
           imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
           imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
-          description: species.flavor_text_entries.filter(entry => entry.language.name === "en")[0].flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," "),
+          description: getFlavorText(species.flavor_text_entries),
           base_stats: {
-            HP: p.stats.filter(el => el.stat.name === "hp" )[0].base_stat,
-            Attack: p.stats.filter(el => el.stat.name === "attack" )[0].base_stat,
-            Defense : p.stats.filter(el => el.stat.name === "defense" )[0].base_stat,
-            SpecialAttack: p.stats.filter(el => el.stat.name === "special-attack" )[0].base_stat,
-            SpecialDefense: p.stats.filter(el => el.stat.name === "special-defense" )[0].base_stat,
-            Speed: p.stats.filter(el => el.stat.name === "speed" )[0].base_stat
+            HP: getStat(p.stats,"hp" ),
+            Attack: getStat(p.stats,"attack"),
+            Defense : getStat(p.stats,"defense"),
+            SpecialAttack: getStat(p.stats,"special-attack"),
+            SpecialDefense: getStat(p.stats,"special-defense"),
+            Speed: getStat(p.stats,"speed")
           }, 
           stage: stage,
           types: p.types.map(t => t.type.name),
@@ -504,7 +524,7 @@ function transformData(apiDataSet,swordShieldData)
           generation: species.generation.name.replace("-"," "),
           evolves_from: species.evolves_from_species ? species.evolves_from_species.name.replace("-"," ") : "",
           evolution_chain: evolutionChain,
-          genus: species.genera.filter(el => el.language.name === "en")[0].genus,
+          genus: getGenus(species),
           abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(", ")
         });
     });
