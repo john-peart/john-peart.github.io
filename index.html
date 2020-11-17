@@ -96,15 +96,14 @@
   </script>
   <script>
     function toggleImageHandler(ev)
-    {
-      
+    {      
       if(ev.target.dataset.imgtype ==="normal"){
-        var newUrl = ev.target.src.replace("/normal/","/shiny/");
+        var newUrl = ev.target.dataset.urlshiny
         ev.target.src= newUrl;
         ev.target.dataset.imgtype="shiny";
       }else{
-        var newURL = ev.target.src.replace("/shiny/","/normal/");
-        ev.target.src = newURL;
+        var newUrl = ev.target.dataset.urlnormal
+        ev.target.src = newUrl;
         ev.target.dataset.imgtype="normal";
       } 
       ev.stopPropagation();
