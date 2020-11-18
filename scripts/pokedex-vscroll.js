@@ -360,8 +360,15 @@ function LoadApiData(url){
 
 function BuildPokemonCards(data){
 
-  var htmlArr = data.finalData.map(async (character) => {   
-    return GeneratePokeCardHtml(character, data.maxStats)          
+  var htmlArr = data.finalData.map(async (character) => { 
+    var _html = ""
+    try{
+      _html = GeneratePokeCardHtml(character, data.maxStats)          
+    }
+    catch(e){
+      console.log(e);
+    }  
+    return _html
   })
   
   return Promise.all(htmlArr)
@@ -471,7 +478,7 @@ function getFlavorText(ftEntries)
 function getGenus(species)
 {
   var genera = species.genera.filter(el => el.language.name === "en")[0];
-  return genera ? genera.genus : 0;
+  return genera ? genera.genus : "";
 }
 
 function transformData(apiDataSet,swordShieldData)
@@ -500,7 +507,8 @@ function transformData(apiDataSet,swordShieldData)
           if (evolutionChain && evolutionChain.indexOf(p.name) === 2) {stage = "Stage 2"}
         }
 
-            
+        if(p && species && generation)
+        {
 
         res.push({
           id: p.id,
@@ -527,6 +535,7 @@ function transformData(apiDataSet,swordShieldData)
           genus: getGenus(species),
           abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(", ")
         });
+      }
     });
   }
     //add in the additional data
