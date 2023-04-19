@@ -9,6 +9,7 @@ const typeURL = "https://pokeapi.co/api/v2/type?limit=100";
 const abilityeURL = "https://pokeapi.co/api/v2/ability?limit=2000";
 const swordShieldURL = "./data/swordshield.json";
 const baseImgUrl = "https://img.pokemondb.net/sprites/home/normal/"
+const baseImgUrlScarletViolet = "https://img.pokemondb.net/sprites/scarlet-violet/normal/"
 const baseImgUrlShiny = "https://img.pokemondb.net/sprites/home/shiny/"
 const baseSpriteUrl = "https://img.pokemondb.net/sprites/sword-shield/icon/"
 
@@ -174,7 +175,7 @@ function getWeakTo(types)
     {
       if(calculated[i] > 1)
       {
-        res.push(TYPE_NAMES[i]);    
+        res.push(TYPE_NAMES[i]);
       }
     }
     return res;
@@ -221,23 +222,23 @@ function GeneratePokeCardHtml(character, maxStats) {
           </div>
           <div class="bg-${character.types[0]}-dark rounded-top">
             <img class="card-img-top mx-auto d-block pokemon" data-imgtype="normal" data-urlshiny="${character.imageUrlShiny}" data-urlnormal="${character.imageUrlNormal}" src="${character.imageUrlNormal}" onClick="toggleImageHandler(event)" onerror="this.src='./images/image-placeholder.png'" alt="Pokemon Image" />
-          </div>   
+          </div>
           <div class="pokemon-stage text-right pr-3 rounded-bottom">
             ${character.stage}
-          </div>        
-          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">            
+          </div>
+          <div class="card-body pt-0 bg-${character.types[0]}-light rounded-bottom">
             <div class="pokemon-types">
               <ul class="list-inline types p-0">
                 ${typesHtml}
-              </ul>
+              </ul>
             </div>
-            <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>              
+            <h5 class="card-title text-center capitalize mb-1">${character.name}</h4>
             <p class="card-text mb-1"><small>${character.description || ""}</small></p>
             <p class="card-text mb-1 text-center">
               <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.generation}</span>
               <span class="text-uppercase badge text-white bg-${character.types[0]}-dark m-1">${character.region}</span>
             </p>
-            <p class="card-text mb-1 text-center">              
+            <p class="card-text mb-1 text-center">
               <small>
                 <table><tr>
                   ${(character.evolution_chain || []).filter(el => el).map(name => '<td class="text-center"><img src="' + buildSpriteURL(baseSpriteUrl,name)+ '"/><br/><span class="capitalize" style="font-size:10px">'+ name + '</span>').join("<td>\u21D2</td>")}
@@ -301,36 +302,36 @@ function GeneratePokeCardHtml(character, maxStats) {
                   </td>
                 </tr>
               </tbody>
-            </table>           
-            <div class="pt-1">            
+            </table>
+            <div class="pt-1">
               <p class="small">
               <ul class="list-inline types p-0">
                   <li class="list-inline-item font-weight-bold mr-1 small">Strong:</li>
                   ${character.strong_against.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
-                </ul>
+                </ul>
               </p>
               <p class="small">
                 <ul class="list-inline types p-0">
                   <li class="list-inline-item font-weight-bold mr-1 small">Weak:</li>
                   ${character.weak_to.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
-                </ul> 
+                </ul>
               </p>
               <p class="small">
                 <ul class="list-inline types p-0">
                   <li class="list-inline-item font-weight-bold mr-1 small">Resistant:</li>
                   ${character.resistant_to.map(t=> '<li class="list-inline-item mr-1 badge-circle small bg-'+ t + '"><img class="type-badge small" src="images/type-images/' + t + '.svg" alt="' + t + '"/></li>').join(``)}
-                </ul> 
+                </ul>
               </p>
             </div>
-            <div>            
+            <div>
               <p class="small">
                 <span class="font-weight-bold">Abilities:</span><span class="capitalize">${character.abilities}</span>
               </p>
-            </div>  
+            </div>
           </div>
         </div>
       </div>
-    </div>  
+    </div>
   </div>
   `;
 
@@ -353,24 +354,23 @@ function LoadApiData(url){
           promises.push(fetch(item.url).then((res) => res.json()));
         });
         return Promise.all(promises).then(function (results) {
-          return results;          
+          return results;
         });
       });
 }
 
 function BuildPokemonCards(data){
 
-  var htmlArr = data.finalData.map(async (character) => { 
+  var htmlArr = data.finalData.map(async (character) => {
     var _html = ""
     try{
-      _html = GeneratePokeCardHtml(character, data.maxStats)          
+      _html = GeneratePokeCardHtml(character, data.maxStats)
     }
     catch(e){
       console.log(e);
-    }  
+    }
     return _html
   })
-  
   return Promise.all(htmlArr)
 
 }
@@ -414,9 +414,8 @@ function searchPokemon(data, searchTerm){
               val.types.findIndex(type => type.toLowerCase().startsWith(searchTerm.toLowerCase().trim())) >-1 ||
               val.region.toLowerCase().startsWith(searchTerm.toLowerCase().trim()) ||
               (val.evolution_chain || []).findIndex(el => (el || "").toLowerCase().includes(searchTerm.toLowerCase().trim())) >-1
-              
-      });      
-    }  
+      });
+    }
     return {
       pokemon: data.pokemon,
       types: data.types,
@@ -425,7 +424,7 @@ function searchPokemon(data, searchTerm){
       abilities: data.abilities,
       finalData: filtered,
       maxStats: data.maxStats
-    } 
+    }
   }
 }
 
@@ -440,7 +439,7 @@ function initSearch(data){
       //clear out the screen and show something if search takes longer than x milliseconds
       container.innerHTML = "";
 
-      var results = searchPokemon(d,el.value);                
+      var results = searchPokemon(d,el.value);
 
       _hlConfig = generateHLConfig(results.finalData,data.maxStats);
       _hyperList.refresh(_hlContainer,_hlConfig)
@@ -469,16 +468,42 @@ function getStat(statArray,statName)
   return stat ? stat.base_stat : 0;
 }
 
-function getFlavorText(ftEntries)
+function getFlavorText(species)
 {
-  var ft = ftEntries.filter(entry => entry.language.name === "en")[0]
-  return ft ? ft.flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," ") : "";    
+  if(species)
+  {
+    var ftEntries = species.flavor_text_entries;
+    var ft = ftEntries.filter(entry => entry.language.name === "en")[0]
+    return ft ? ft.flavor_text.replace(String.fromCharCode(12)," ").replace(String.fromCharCode(10)," ") : "";
+  }
+  else{
+    return "";
+  }
 }
 
 function getGenus(species)
 {
-  var genera = species.genera.filter(el => el.language.name === "en")[0];
-  return genera ? genera.genus : "";
+  if(species){
+    var genera = species.genera.filter(el => el.language.name === "en")[0];
+    return genera ? genera.genus : "";
+  }
+  else{
+    return "";
+  }
+}
+
+
+function getGeneration(species){
+  return species ? species.generation.name.replace("-"," ") : "";
+}
+
+function getRegion(generation)
+{
+  return (generation) ? generation.main_region.name : "";
+}
+
+function getEvolvesFrom(species){
+  return (species && species.evolves_from_species) ? species.evolves_from_species.name.replace("-"," ") : "";
 }
 
 function transformData(apiDataSet,swordShieldData)
@@ -498,49 +523,58 @@ function transformData(apiDataSet,swordShieldData)
 
       //transform our API data first into a more friendly format
       apiDataSet.pokemon.forEach(p => {
-        var species = apiDataSet.species.filter(el => el.name === p.species.name)[0] ;          
-        var generation = apiDataSet.generations.filter(el => el.name === species.generation.name)[0];       
-        var evolutionChain = chains.filter(c => c[0] === p.name|| c[1] === p.name || c[2] === p.name)[0];
-        var stage = "Basic"
-        if (evolutionChain && evolutionChain.indexOf(p.name) === 1) {stage = "Stage 1"}
-        else{
-          if (evolutionChain && evolutionChain.indexOf(p.name) === 2) {stage = "Stage 2"}
+       try{
+          var species = apiDataSet.species.filter(el => el.name === p.species.name)[0] ;
+          var generation = ((species && species.generation) ?  apiDataSet.generations.filter(el => el.name === species.generation.name)[0]: null);
+          var evolutionChain = chains.filter(c => c[0] === p.name|| c[1] === p.name || c[2] === p.name)[0];
+          var stage = "Basic"
+          if (evolutionChain && evolutionChain.indexOf(p.name) === 1) {stage = "Stage 1"}
+          else{
+            if (evolutionChain && evolutionChain.indexOf(p.name) === 2) {stage = "Stage 2"}
+          }
+
+          if(p)
+          {
+
+        var region = getRegion(generation);
+        
+
+          res.push({
+            id: p.id,
+            name: p.name,
+            height: DecimeterToFeetAndInches(p.height),
+            weight: HectogramToPounds(p.weight),
+            imageUrlNormal: (region!="paldea"? buildSpriteURL(baseImgUrl,p.name):buildSpriteURL(baseImgUrlScarletViolet,p.name) ),
+            imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
+            description: getFlavorText(species),
+            base_stats: {
+              HP: getStat(p.stats,"hp" ),
+              Attack: getStat(p.stats,"attack"),
+              Defense : getStat(p.stats,"defense"),
+              SpecialAttack: getStat(p.stats,"special-attack"),
+              SpecialDefense: getStat(p.stats,"special-defense"),
+              Speed: getStat(p.stats,"speed")
+            },
+            stage: stage,
+            types: p.types.map(t => t.type.name),
+            region: getRegion(generation),
+            generation: getGeneration(species),
+            evolves_from: getEvolvesFrom(species),
+            evolution_chain: evolutionChain,
+            genus: getGenus(species),
+            abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(", ")
+          });
         }
-
-        if(p && species && generation)
-        {
-
-        res.push({
-          id: p.id,
-          name: p.name,
-          height: DecimeterToFeetAndInches(p.height),
-          weight: HectogramToPounds(p.weight),
-          imageUrlNormal: buildSpriteURL(baseImgUrl,p.name),
-          imageUrlShiny: buildSpriteURL(baseImgUrlShiny, p.name),
-          description: getFlavorText(species.flavor_text_entries),
-          base_stats: {
-            HP: getStat(p.stats,"hp" ),
-            Attack: getStat(p.stats,"attack"),
-            Defense : getStat(p.stats,"defense"),
-            SpecialAttack: getStat(p.stats,"special-attack"),
-            SpecialDefense: getStat(p.stats,"special-defense"),
-            Speed: getStat(p.stats,"speed")
-          }, 
-          stage: stage,
-          types: p.types.map(t => t.type.name),
-          region: generation.main_region.name,
-          generation: species.generation.name.replace("-"," "),
-          evolves_from: species.evolves_from_species ? species.evolves_from_species.name.replace("-"," ") : "",
-          evolution_chain: evolutionChain,
-          genus: getGenus(species),
-          abilities: p.abilities.map(el => el.ability.name.replace("-"," ")).join(", ")
-        });
+      }
+      catch(e)
+      {
+        console.log(p,e)
       }
     });
   }
     //add in the additional data
     if(swordShieldData)
-    {      
+    {
 
       //ignore entries that have a number in them or that are from another DEX
       var ssFiltered = swordShieldData.filter(el => !/\d/.test(el.name))
@@ -563,7 +597,7 @@ function transformData(apiDataSet,swordShieldData)
                         });
 
 
-      ssFiltered.forEach(p => {          
+      ssFiltered.forEach(p => {
 
           //filter only those specific to Galar
           if (res.filter(el => el.id === p.id).length === 0 ){
@@ -592,7 +626,6 @@ function transformData(apiDataSet,swordShieldData)
                 evolves_from: "",
                 evolution_chain: ssEvolutionChain.filter(c => c[0] === p.name|| c[1] === p.name || c[2] === p.name)[0],
                 genus: p.category
-                
               }
             );
           }
@@ -703,19 +736,19 @@ function init(containerName) {
         return LoadApiData(generationURL);
       })
       .then((generations) => {
-        dataSet.generations = generations;               
-        updateLoadingProgress("Loading Galar Data");
-        return LoadJSON(swordShieldURL);
-      })      
-      .then((swordShield) => {
+        dataSet.generations = generations;
+      //   updateLoadingProgress("Loading Galar Data");
+      //   return LoadJSON(swordShieldURL);
+      // })
+      // .then((swordShield) => {
         updateLoadingProgress("Building Pokedex");
-        dataSet.finalData = transformData(dataSet,swordShield);           
+        dataSet.finalData = transformData(dataSet); //,swordShield);
         dataSet.maxStats = GetMaxStats(dataSet.finalData);
         return BuildPokemonCards(dataSet);
       })
       .then((html)=>{
         initHyperList(containerName,{pokemon: dataSet.finalData, maxStats: dataSet.maxStats});
-        initSearch(dataSet);        
+        initSearch(dataSet);
         hideLoading();
       })
       .catch((error) => {
@@ -727,4 +760,3 @@ function init(containerName) {
 }
 
 init("pokemonCardDeck");
-
