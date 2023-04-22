@@ -17,15 +17,6 @@ div.card {
     padding: 10px;
 }
 
-
-/* Smartphones (portrait and landscape) ----------- */
-@media only screen and (min-device-width : 320px) and (max-device-width : 480px) {
-    /* Styles */
-    div.card{
-      margin-left:50px!important;  
-    }
-}
-
 .list-inline.types > li{
     display: inline-block;
     min-height: 16px;
@@ -272,5 +263,5 @@ td.stat-label{
 
 /* HYPERLIST VIRTUAL SCROLL CLASS */
 .vrow{
-    left:calc(50% - 170px);
+    left:calc(50% - 145px);
 }
